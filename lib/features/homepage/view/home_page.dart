@@ -20,18 +20,22 @@ class Homepage extends StatelessWidget {
     ];
     return Scaffold(
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.all(Sizes.defaultSpace),
               child: CarouselSlider(
-                  items: imgList
-                      .map((item) => GestureDetector(
-                            child: Image.network(item, width: DeviceUtils.getScreenWidth(context), fit: BoxFit.cover),
-                          ),)
-                      .toList(),
-                  options: CarouselOptions(viewportFraction: 1, height: 120),),
+                items: imgList
+                    .map(
+                      (item) => GestureDetector(
+                        child: Image.network(item, width: DeviceUtils.getScreenWidth(context), fit: BoxFit.cover),
+                      ),
+                    )
+                    .toList(),
+                options: CarouselOptions(viewportFraction: 1, height: 120),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: Sizes.defaultSpace / 2),

@@ -4,6 +4,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:reco/common/widgets/card/card_item.dart';
 import 'package:reco/common/widgets/layout/grid_layout.dart';
 import 'package:reco/common/widgets/tabbar/tabbar.dart';
+import 'package:reco/utils/constants/sizes.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -57,12 +58,15 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
             ),
           ];
         },
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            GridLayout(itemCount: 21, mainAxisExtent: 190, itemBuilder: (_, index) => const CardItem()),
-            GridLayout(itemCount: 21, mainAxisExtent: 190, itemBuilder: (_, index) => const CardItem()),
-          ],
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: Sizes.sm, vertical: Sizes.xs),
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              GridLayout(itemCount: 21, mainAxisExtent: 190, itemBuilder: (_, index) => const CardItem()),
+              GridLayout(itemCount: 21, mainAxisExtent: 190, itemBuilder: (_, index) => const CardItem()),
+            ],
+          ),
         ),
       ),
     );

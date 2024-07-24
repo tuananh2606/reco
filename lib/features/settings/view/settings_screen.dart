@@ -13,18 +13,13 @@ class SettingsScreen extends StatelessWidget {
         title: const Text('Settings'),
       ),
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: Sizes.md),
-                child: Text(
-                  'Edit Profile',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
+              const SettingTitleItem(title: 'Edit Profile'),
               const SizedBox(
                 height: 4,
               ),
@@ -49,9 +44,115 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              const SettingTitleItem(title: 'User Status'),
+              Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: Sizes.md / 2, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade800,
+                      border: Border(bottom: BorderSide(width: 0.5, color: Colors.grey.shade600)),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey.shade600,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                      ),
+                      child: const Text(
+                        'Basic Plan',
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 14),
+                      ),
+                    ),
+                  ),
+                  const SettingItem(title: 'Restore In-App Purchases'),
+                ],
+              ),
+              const SettingTitleItem(title: 'Content options'),
+              const Column(
+                children: [
+                  SettingItem(title: 'Change content language'),
+                  SettingItem(title: 'Change service interface language'),
+                ],
+              ),
+              const SettingTitleItem(title: 'Announcements'),
+              const SettingItem(title: 'Service announcement'),
+              const SettingTitleItem(title: 'Notifications'),
+              Column(
+                children: [
+                  SettingItem(
+                    title: 'News and events',
+                    trailing: Switch(value: true, activeColor: Colors.white, onChanged: (value) {}),
+                  ),
+                  SettingItem(
+                    title: 'Updates of your favorites',
+                    trailing: Switch(value: false, activeColor: Colors.white, onChanged: (value) {}),
+                  ),
+                ],
+              ),
+              const SettingTitleItem(title: 'Others'),
+              const Column(
+                children: [
+                  SettingItem(title: 'Help'),
+                  SettingItem(title: 'Change tracking permission'),
+                  SettingItem(title: 'About us'),
+                  SettingItem(title: 'Content Ratings'),
+                  SettingItem(title: 'Terms of service'),
+                  SettingItem(title: 'Privacy policy'),
+                  SettingItem(title: 'Copyrights'),
+                ],
+              ),
+              const SizedBox(
+                height: 8,
+              ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class SettingTitleItem extends StatelessWidget {
+  const SettingTitleItem({
+    required this.title,
+    super.key,
+  });
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: Sizes.xs, horizontal: Sizes.md),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+    );
+  }
+}
+
+class SettingItem extends StatelessWidget {
+  const SettingItem({
+    required this.title,
+    this.trailing,
+    super.key,
+  });
+
+  final String title;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.grey.shade800,
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [Text(title), trailing ?? const SizedBox()],
       ),
     );
   }

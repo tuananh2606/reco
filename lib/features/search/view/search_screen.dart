@@ -109,6 +109,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
           controller: _tabController,
           children: [
             SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
                   CarouselSlider(
@@ -215,6 +216,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
               ),
             ),
             SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
                   Image.network(

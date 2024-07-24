@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:reco/utils/constants/sizes.dart';
 
 class BottomNavbar extends StatelessWidget {
   BottomNavbar({required this.navigationShell, super.key});
@@ -43,25 +44,18 @@ class BottomNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: SafeArea(
-        child: ColoredBox(
-          color: Colors.black,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-            child: GNav(
-              backgroundColor: Colors.black,
-              color: Colors.white,
-              activeColor: Colors.yellow,
-              tabBackgroundColor: Colors.grey.shade800,
-              gap: 8,
-              iconSize: 28,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              tabs: body,
-              selectedIndex: navigationShell.currentIndex,
-              onTabChange: (index) => _onItemTapped(index, context),
-            ),
-          ),
-        ),
+      bottomNavigationBar: GNav(
+        backgroundColor: Colors.black12,
+        color: Colors.white,
+        activeColor: Colors.yellow,
+        tabBackgroundColor: Colors.grey.shade800,
+        gap: 8,
+        iconSize: 28,
+        tabMargin: const EdgeInsets.all(8),
+        padding: const EdgeInsets.symmetric(horizontal: Sizes.md, vertical: Sizes.sm),
+        tabs: body,
+        selectedIndex: navigationShell.currentIndex,
+        onTabChange: (index) => _onItemTapped(index, context),
       ),
       body: navigationShell,
     );

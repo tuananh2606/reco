@@ -51,6 +51,7 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
       body: DefaultTabController(
         length: tabs.length,
         child: NestedScrollView(
+          physics: const BouncingScrollPhysics(),
           controller: _scrollViewController,
           headerSliverBuilder: (_, innerBoxIsScrolled) {
             return [
@@ -203,6 +204,7 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: TabBarView(
+              physics: const NeverScrollableScrollPhysics(),
               children: [
                 ListView(
                   shrinkWrap: true,
