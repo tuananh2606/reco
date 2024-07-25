@@ -1,9 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:reco/common/widgets/card/card_item.dart';
 import 'package:reco/common/widgets/carousel/carousel_slider.dart';
-import 'package:reco/common/widgets/layout/grid_layout.dart';
 import 'package:reco/common/widgets/tabbar/switch_tabbar.dart';
 import 'package:reco/utils/constants/sizes.dart';
 import 'package:reco/utils/device/device_utility.dart';
@@ -225,10 +223,10 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                     fit: BoxFit.cover,
                     'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(Sizes.sm),
-                    child: GridLayout(itemCount: 21, mainAxisExtent: 190, itemBuilder: (_, index) => const CardItem()),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(Sizes.sm),
+                  //   child: GridLayout(itemCount: 21, mainAxisExtent: 190, itemBuilder: (_, index) => const CardItem()),
+                  // ),
                 ],
               ),
             ),

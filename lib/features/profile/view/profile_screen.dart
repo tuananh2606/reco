@@ -63,8 +63,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
           child: TabBarView(
             controller: _tabController,
             children: [
-              GridLayout(itemCount: 21, mainAxisExtent: 190, itemBuilder: (_, index) => const CardItem()),
-              GridLayout(itemCount: 21, mainAxisExtent: 190, itemBuilder: (_, index) => const CardItem()),
+              //GridLayout(itemCount: 21, mainAxisExtent: 190, itemBuilder: (_, index) => const CardItem()),
+              //GridLayout(itemCount: 21, mainAxisExtent: 190, itemBuilder: (_, index) => const CardItem()),
             ],
           ),
         ),
