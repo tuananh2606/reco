@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:reco/utils/constants/sizes.dart';
 
 class GridLayout extends StatelessWidget {
-  const GridLayout({required this.itemCount, required this.itemBuilder, super.key, this.mainAxisExtent});
+  const GridLayout({required this.itemCount, required this.itemBuilder, super.key, this.mainAxisExtent = 220});
   final int itemCount;
   final double? mainAxisExtent;
   final Widget? Function(BuildContext, int) itemBuilder;
@@ -16,7 +16,7 @@ class GridLayout extends StatelessWidget {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         mainAxisSpacing: Sizes.gridViewSpacing / 4,
-        crossAxisSpacing: Sizes.gridViewSpacing / 4,
+        crossAxisSpacing: Sizes.gridViewSpacing / 2,
         mainAxisExtent: mainAxisExtent,
       ),
       itemBuilder: itemBuilder,

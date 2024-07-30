@@ -1,12 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:reco/utils/constants/sizes.dart';
 
 class CardItem extends StatelessWidget {
   const CardItem({
     super.key,
-    required this.img,
-    required this.title,
-    required this.id,
+    this.img = '',
+    this.title = '',
+    this.id = '',
   });
 
   final String id;
@@ -15,28 +17,41 @@ class CardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Image.network(
-          img,
-          fit: BoxFit.cover,
-          height: 140,
-        ),
-        const Row(
-          children: [
-            Icon(
-              Icons.visibility,
-              size: Sizes.iconSm,
+    return GestureDetector(
+      onTap: () => context.push('/details/$id'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CachedNetworkImage(
+            imageUrl: img,
+            placeholder: (context, url) => Container(
+              color: Colors.black,
             ),
-            SizedBox(
-              width: 4,
-            ),
-            Text('10000'),
-          ],
-        ),
-        Text(title),
-      ],
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+            fit: BoxFit.cover,
+            height: 160,
+            width: double.infinity,
+          ),
+          const Row(
+            children: [
+              Icon(
+                Icons.visibility,
+                size: Sizes.iconSm,
+              ),
+              SizedBox(
+                width: 4,
+              ),
+              Text('10000'),
+            ],
+          ),
+          Text(
+            title,
+            maxLines: 2,
+            style: Theme.of(context).textTheme.labelLarge,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 }

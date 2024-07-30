@@ -1,9 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reco/bloc/manga_bloc/manga_bloc.dart';
 import 'package:reco/common/widgets/card/card_item.dart';
 import 'package:reco/common/widgets/layout/grid_layout.dart';
-import 'package:reco/features/homepage/bloc/manga_bloc.dart';
 import 'package:reco/utils/constants/sizes.dart';
 import 'package:reco/utils/device/device_utility.dart';
 
@@ -22,6 +22,10 @@ class _HomepageState extends State<Homepage> {
     super.initState();
   }
 
+  Future<void> _refresh() async {
+    mangaBloc.add(MangaInitialFetchEvent());
+  }
+
   @override
   Widget build(BuildContext context) {
     final imgList = <String>[
@@ -33,67 +37,72 @@ class _HomepageState extends State<Homepage> {
       'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80',
     ];
     return Scaffold(
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: BlocConsumer(
-          bloc: mangaBloc,
-          listenWhen: (previous, current) => current is MangaActionState,
-          buildWhen: (previous, current) => current is! MangaActionState,
-          listener: (context, state) {},
-          builder: (context, state) {
-            switch (state.runtimeType) {
-              case MangaFetchingLoadingState:
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              case MangaFetchingSuccessfulState:
-                final successState = state as MangaFetchingSuccessfulState;
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(Sizes.defaultSpace),
-                      child: CarouselSlider(
-                        items: imgList
-                            .map(
-                              (item) => GestureDetector(
-                                child:
-                                    Image.network(item, width: DeviceUtils.getScreenWidth(context), fit: BoxFit.cover),
-                              ),
-                            )
-                            .toList(),
-                        options: CarouselOptions(viewportFraction: 1, height: 120),
-                      ),
+      body: RefreshIndicator(
+        onRefresh: _refresh,
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: BlocBuilder(
+            bloc: mangaBloc,
+            builder: (context, state) {
+              switch (state.runtimeType) {
+                case MangaFetchingLoadingState:
+                  return SizedBox(
+                    height: DeviceUtils.getScreenHeight(context),
+                    child: const Center(
+                      child: CircularProgressIndicator(),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: Sizes.defaultSpace / 2),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Latest Updates',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          const SizedBox(
-                            height: Sizes.spaceBtwItems,
-                          ),
-                          GridLayout(
-                            itemCount: successState.manga.results.length,
-                            mainAxisExtent: 190,
-                            itemBuilder: (context, index) => CardItem(
-                              img: '',
-                              title: '',
-                              id: '',
+                  );
+                case MangaFetchingSuccessfulState:
+                  final successState = state as MangaFetchingSuccessfulState;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(Sizes.defaultSpace),
+                        child: CarouselSlider(
+                          items: imgList
+                              .map(
+                                (item) => GestureDetector(
+                                  child: Image.network(item,
+                                      width: DeviceUtils.getScreenWidth(context), fit: BoxFit.cover),
+                                ),
+                              )
+                              .toList(),
+                          options: CarouselOptions(viewportFraction: 1, height: 120),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: Sizes.defaultSpace / 2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Latest Updates',
+                              style: Theme.of(context).textTheme.titleLarge,
                             ),
-                          ),
-                        ],
+                            const SizedBox(
+                              height: Sizes.spaceBtwItems,
+                            ),
+                            GridLayout(
+                              itemCount: successState.manga.results.length,
+                              itemBuilder: (context, index) => CardItem(
+                                img: successState.manga.results[index].img!,
+                                title: successState.manga.results[index].title,
+                                id: successState.manga.results[index].id!,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                );
-            }
-            return const CircularProgressIndicator();
-          },
+                    ],
+                  );
+              }
+              return SizedBox(
+                height: DeviceUtils.getScreenHeight(context),
+                child: const Center(child: CircularProgressIndicator()),
+              );
+            },
+          ),
         ),
       ),
     );

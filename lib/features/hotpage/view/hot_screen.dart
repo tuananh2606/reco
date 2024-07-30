@@ -47,212 +47,210 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
       'Deutsch',
     ];
 
-    return Scaffold(
-      body: DefaultTabController(
-        length: tabs.length,
-        child: NestedScrollView(
-          physics: const BouncingScrollPhysics(),
-          controller: _scrollViewController,
-          headerSliverBuilder: (_, innerBoxIsScrolled) {
-            return [
-              SliverToBoxAdapter(
-                child: ListView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      height: 150,
-                      child: Image.network(
-                        'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
-                        fit: BoxFit.cover,
-                      ),
+    return DefaultTabController(
+      length: tabs.length,
+      child: NestedScrollView(
+        physics: const BouncingScrollPhysics(),
+        controller: _scrollViewController,
+        headerSliverBuilder: (_, innerBoxIsScrolled) {
+          return [
+            SliverToBoxAdapter(
+              child: ListView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    height: 150,
+                    child: Image.network(
+                      'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
+                      fit: BoxFit.cover,
                     ),
-                    const SizedBox(
-                      height: Sizes.spaceBtwItems,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: Sizes.md),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Ranking',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          const SizedBox(
-                            height: Sizes.spaceBtwItems,
-                          ),
-                          GestureDetector(
-                            onTap: () => showModalBottomSheet(
-                              isScrollControlled: true,
-                              context: context,
-                              builder: (context) => SizedBox(
-                                height: DeviceUtils.getScreenHeight(context) * 0.8,
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(Sizes.sm),
-                                      decoration: BoxDecoration(
-                                        color: Colors.red.shade700,
-                                        borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(Sizes.borderRadiusXl),
-                                          topRight: Radius.circular(Sizes.borderRadiusXl),
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        'Languages',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(
+                    height: Sizes.spaceBtwItems,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: Sizes.md),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Ranking',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(
+                          height: Sizes.spaceBtwItems,
+                        ),
+                        GestureDetector(
+                          onTap: () => showModalBottomSheet(
+                            isScrollControlled: true,
+                            context: context,
+                            builder: (context) => SizedBox(
+                              height: DeviceUtils.getScreenHeight(context) * 0.8,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(Sizes.sm),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red.shade700,
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(Sizes.borderRadiusXl),
+                                        topRight: Radius.circular(Sizes.borderRadiusXl),
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 8,
+                                    child: const Text(
+                                      'Languages',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontWeight: FontWeight.w600),
                                     ),
-                                    const CheckBoxLanguage(
-                                      title: 'Select all languages',
-                                    ),
-                                    const Divider(
-                                      height: 0,
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: checkboxTitle.length,
-                                      itemBuilder: (BuildContext context, int index) {
-                                        return CheckBoxLanguage(
-                                          title: checkboxTitle[index],
-                                        );
-                                      },
-                                    ),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.end,
-                                          children: [
-                                            SizedBox(
-                                              width: double.infinity,
-                                              child: ElevatedButton(
-                                                onPressed: () {},
-                                                style: ElevatedButton.styleFrom(
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(Sizes.sm), // <-- Radius
-                                                  ),
-                                                  foregroundColor: Colors.white,
-                                                  backgroundColor: Colors.red.shade700,
+                                  ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  const CheckBoxLanguage(
+                                    title: 'Select all languages',
+                                  ),
+                                  const Divider(
+                                    height: 0,
+                                  ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: checkboxTitle.length,
+                                    itemBuilder: (BuildContext context, int index) {
+                                      return CheckBoxLanguage(
+                                        title: checkboxTitle[index],
+                                      );
+                                    },
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          SizedBox(
+                                            width: double.infinity,
+                                            child: ElevatedButton(
+                                              onPressed: () {},
+                                              style: ElevatedButton.styleFrom(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(Sizes.sm), // <-- Radius
                                                 ),
-                                                child: const Text('Done'),
+                                                foregroundColor: Colors.white,
+                                                backgroundColor: Colors.red.shade700,
                                               ),
+                                              child: const Text('Done'),
                                             ),
-                                            SizedBox(
-                                              width: double.infinity,
-                                              child: TextButton(
-                                                onPressed: () => Navigator.of(context).pop(),
-                                                style: TextButton.styleFrom(
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(Sizes.sm), // <-- Radius
-                                                  ),
-                                                  foregroundColor: Colors.white,
+                                          ),
+                                          SizedBox(
+                                            width: double.infinity,
+                                            child: TextButton(
+                                              onPressed: () => Navigator.of(context).pop(),
+                                              style: TextButton.styleFrom(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(Sizes.sm), // <-- Radius
                                                 ),
-                                                child: const Text('Cancel'),
+                                                foregroundColor: Colors.white,
                                               ),
+                                              child: const Text('Cancel'),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
-                            child: const Row(
-                              children: [
-                                Text('View by Language'),
-                                SizedBox(width: 8),
-                                Icon(
-                                  LineIcons.angleDown,
-                                  size: 12,
-                                ),
-                              ],
-                            ),
                           ),
-                          const SizedBox(
-                            height: Sizes.spaceBtwItems / 2,
+                          child: const Row(
+                            children: [
+                              Text('View by Language'),
+                              SizedBox(width: 8),
+                              Icon(
+                                LineIcons.angleDown,
+                                size: 12,
+                              ),
+                            ],
                           ),
-                          const LChip(),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(
+                          height: Sizes.spaceBtwItems / 2,
+                        ),
+                        const LChip(),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              SliverAppBar(
-                automaticallyImplyLeading: false,
-                pinned: true,
-                floating: true,
-                toolbarHeight: 0,
-                backgroundColor: Colors.black,
-                forceElevated: innerBoxIsScrolled,
-                bottom: const RTabBar(tabs: tabs),
-              ),
-            ];
-          },
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: TabBarView(
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                ListView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: const [
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                  ],
-                ),
-                ListView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: const [
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                  ],
-                ),
-                ListView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: const [
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                    HorizontalCardItem(),
-                  ],
-                ),
-              ],
             ),
+            SliverAppBar(
+              automaticallyImplyLeading: false,
+              pinned: true,
+              floating: true,
+              toolbarHeight: 0,
+              backgroundColor: Colors.black,
+              forceElevated: innerBoxIsScrolled,
+              bottom: const RTabBar(tabs: tabs),
+            ),
+          ];
+        },
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: TabBarView(
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              ListView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: const [
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                ],
+              ),
+              ListView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: const [
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                ],
+              ),
+              ListView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: const [
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                  HorizontalCardItem(),
+                ],
+              ),
+            ],
           ),
         ),
       ),
