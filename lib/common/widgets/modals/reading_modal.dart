@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,7 +16,8 @@ import 'package:reco/utils/device/device_utility.dart';
 enum SegmentType { horizontal, vertical }
 
 class ReadingModal extends StatefulWidget {
-  const ReadingModal({required this.id, required this.title, super.key, this.state});
+  const ReadingModal({required this.id, required this.title, required this.bloc, super.key, this.state});
+  final MangaBloc bloc;
   final String id;
   final String title;
   final Object? state;
@@ -26,8 +29,10 @@ class ReadingModal extends StatefulWidget {
 class _ReadingModalState extends State<ReadingModal> {
   late SegmentType readingDirection = SegmentType.vertical;
   final ScrollController _controller = ScrollController();
+  final ScrollController _controller1 = ScrollController();
+  late Object? data;
   bool _isVisible = true;
-
+  int _currentIndex = 0;
   void _listen() {
     switch (_controller.position.userScrollDirection) {
       case ScrollDirection.idle:
@@ -53,6 +58,7 @@ class _ReadingModalState extends State<ReadingModal> {
 
   @override
   void initState() {
+    data = widget.state;
     _controller.addListener(_listen);
     super.initState();
   }
@@ -67,7 +73,7 @@ class _ReadingModalState extends State<ReadingModal> {
   Widget build(BuildContext context) {
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter setState) {
-        switch (widget.state!.runtimeType) {
+        switch (data.runtimeType) {
           case MangaFetchingLoadingState:
             return SizedBox(
               height: DeviceUtils.getScreenHeight(context),
@@ -76,22 +82,29 @@ class _ReadingModalState extends State<ReadingModal> {
               ),
             );
           case MangaGetChapterPagesSuccessfulState:
-            final pageState = widget.state! as MangaGetChapterPagesSuccessfulState;
+            log(data.runtimeType.toString());
+            final pageState = data! as MangaGetChapterPagesSuccessfulState;
             return Scaffold(
               bottomNavigationBar: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
                 height: _isVisible ? 60 : 0,
                 child: BottomAppBar(
-                  child: Row(
-                    children: <Widget>[
+                  child: Stack(
+                    children: [
+                      // SizedBox.expand(
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.center,
+                      //     children: [
+                      //       Text(
+                      //         '${_currentIndex + 1} / ${pageState.pages.results.length}',
+                      //         style: const TextStyle(fontWeight: FontWeight.w600),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                       IconButton(
-                        tooltip: 'Search',
-                        icon: _isVisible ? const Icon(Icons.search) : const Icon(Icons.abc),
-                        onPressed: () {},
-                      ),
-                      IconButton(
-                        tooltip: 'Favorite',
-                        icon: const Icon(Icons.favorite),
+                        icon: const Icon(Icons.comment),
                         onPressed: () {},
                       ),
                     ],
@@ -106,6 +119,7 @@ class _ReadingModalState extends State<ReadingModal> {
                       floating: true,
                       snap: true,
                       centerTitle: true,
+                      // forceElevated: innerBoxIsScrolled,
                       leading: IconButton(
                         icon: const Icon(LineIcons.times),
                         onPressed: () => context.pop(),
@@ -218,16 +232,29 @@ class _ReadingModalState extends State<ReadingModal> {
                   ];
                 },
                 body: ListView.builder(
+                  controller: _controller1,
                   shrinkWrap: true,
-                  padding: readingDirection == SegmentType.vertical ? EdgeInsets.zero : const EdgeInsets.all(16),
-                  scrollDirection: readingDirection == SegmentType.vertical ? Axis.vertical : Axis.horizontal,
+                  padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          minHeight: 200,
-                        ),
+                    return GestureDetector(
+                      onPanDown: (details) {
+                        if (_controller1.offset >= _controller1.position.maxScrollExtent) {
+                          // widget.bloc.add(
+                          //   MangaGetChapterPagesEvent(id: 'chapter-2'),
+                          // );
+                        }
+                      },
+                      // onPanUpdate: (details) {
+                      //   if (details.delta.dy < 0) {
+                      //     log('Swiping up the element $index');
+                      //   }
+                      //   // Catch the swipe down action.
+                      //   if (details.delta.dy > 0) {
+                      //     log('Swiping down the element $index');
+                      //   }
+                      // },
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
                         child: CachedNetworkImage(
                           httpHeaders: const {
                             'Referer': 'https://manganato.com/',
