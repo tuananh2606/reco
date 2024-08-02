@@ -1,5 +1,7 @@
 part of 'manga_bloc.dart';
 
+enum MangaStatus { initial, success, failure }
+
 @immutable
 abstract class MangaState {}
 

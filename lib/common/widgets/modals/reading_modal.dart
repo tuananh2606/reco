@@ -5,6 +5,7 @@ import 'package:custom_sliding_segmented_control/custom_sliding_segmented_contro
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -16,11 +17,10 @@ import 'package:reco/utils/device/device_utility.dart';
 enum SegmentType { horizontal, vertical }
 
 class ReadingModal extends StatefulWidget {
-  const ReadingModal({required this.id, required this.title, required this.bloc, super.key, this.state});
+  const ReadingModal({required this.id, required this.title, required this.bloc, super.key});
   final MangaBloc bloc;
   final String id;
   final String title;
-  final Object? state;
 
   @override
   _ReadingModalState createState() => _ReadingModalState();
@@ -31,6 +31,8 @@ class _ReadingModalState extends State<ReadingModal> {
   final ScrollController _controller = ScrollController();
   final ScrollController _controller1 = ScrollController();
   late Object? data;
+
+  late int? numChapter;
   bool _isVisible = true;
   int _currentIndex = 0;
   void _listen() {
@@ -58,7 +60,7 @@ class _ReadingModalState extends State<ReadingModal> {
 
   @override
   void initState() {
-    data = widget.state;
+    numChapter = int.parse(widget.id.substring(widget.id.length - 1, widget.id.length));
     _controller.addListener(_listen);
     super.initState();
   }
@@ -69,11 +71,26 @@ class _ReadingModalState extends State<ReadingModal> {
     super.dispose();
   }
 
+  bool get _isBottom {
+    if (!_controller1.hasClients) return false;
+    final maxScroll = _controller1.position.maxScrollExtent;
+    final currentScroll = _controller1.offset;
+    return currentScroll >= (maxScroll * 0.9);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return StatefulBuilder(
-      builder: (BuildContext context, StateSetter setState) {
-        switch (data.runtimeType) {
+    return BlocConsumer(
+      listener: (context, state) {
+        log('Thay doi');
+      },
+      buildWhen: (previous, current) {
+        log('previous: $previous, current:$current');
+        return previous != current;
+      },
+      bloc: widget.bloc,
+      builder: (context, state) {
+        switch (state.runtimeType) {
           case MangaFetchingLoadingState:
             return SizedBox(
               height: DeviceUtils.getScreenHeight(context),
@@ -82,8 +99,7 @@ class _ReadingModalState extends State<ReadingModal> {
               ),
             );
           case MangaGetChapterPagesSuccessfulState:
-            log(data.runtimeType.toString());
-            final pageState = data! as MangaGetChapterPagesSuccessfulState;
+            final pageState = state as MangaGetChapterPagesSuccessfulState;
             return Scaffold(
               bottomNavigationBar: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
@@ -234,14 +250,14 @@ class _ReadingModalState extends State<ReadingModal> {
                 body: ListView.builder(
                   controller: _controller1,
                   shrinkWrap: true,
+                  scrollDirection: readingDirection == SegmentType.vertical ? Axis.vertical : Axis.horizontal,
                   padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onPanDown: (details) {
-                        if (_controller1.offset >= _controller1.position.maxScrollExtent) {
-                          // widget.bloc.add(
-                          //   MangaGetChapterPagesEvent(id: 'chapter-2'),
-                          // );
+                        if (_isBottom) {
+                          context.read<MangaBloc>().add(MangaGetChapterPagesEvent(
+                              id: '${widget.id.substring(0, widget.id.length - 1)}${numChapter! + 1}'));
                         }
                       },
                       // onPanUpdate: (details) {

@@ -197,17 +197,10 @@ class _DetailScreenState extends State<DetailScreen> {
                                       expand: true,
                                       context: context,
                                       backgroundColor: Colors.black,
-                                      builder: (context) => BlocBuilder(
+                                      builder: (context) => ReadingModal(
                                         bloc: _pageBloc,
-                                        builder: (context, state) {
-                                          return ReadingModal(
-                                            bloc: _pageBloc,
-                                            state: state,
-                                            id: successState.manga.results.chapters!.sublist(first, last)[index].id!,
-                                            title:
-                                                successState.manga.results.chapters!.sublist(first, last)[index].title!,
-                                          );
-                                        },
+                                        id: successState.manga.results.chapters!.sublist(first, last)[index].id!,
+                                        title: successState.manga.results.chapters!.sublist(first, last)[index].title!,
                                       ),
                                     );
                                   },
