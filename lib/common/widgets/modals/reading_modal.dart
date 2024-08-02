@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
+import 'package:exprollable_page_view/exprollable_page_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -10,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:reco/bloc/manga_bloc/data/models/manga_model.dart';
 import 'package:reco/bloc/manga_bloc/manga_bloc.dart';
 import 'package:reco/utils/constants/sizes.dart';
 import 'package:reco/utils/device/device_utility.dart';
@@ -17,24 +19,32 @@ import 'package:reco/utils/device/device_utility.dart';
 enum SegmentType { horizontal, vertical }
 
 class ReadingModal extends StatefulWidget {
-  const ReadingModal({required this.id, required this.title, required this.bloc, super.key});
-  final MangaBloc bloc;
+  const ReadingModal({
+    required this.id,
+    required this.totalChapters,
+    required this.indexChapter,
+    required this.chapters,
+    super.key,
+  });
   final String id;
-  final String title;
+  final int totalChapters;
+  final int indexChapter;
+  final List<Chapter> chapters;
 
   @override
   _ReadingModalState createState() => _ReadingModalState();
 }
 
 class _ReadingModalState extends State<ReadingModal> {
+  final MangaBloc _pageBloc = MangaBloc();
   late SegmentType readingDirection = SegmentType.vertical;
   final ScrollController _controller = ScrollController();
-  final ScrollController _controller1 = ScrollController();
+  final ScrollController _controller1 = ScrollController(keepScrollOffset: false);
   late Object? data;
-
-  late int? numChapter;
+  late final ExprollablePageController _controllerPageView;
+  late num? numChapter;
   bool _isVisible = true;
-  int _currentIndex = 0;
+
   void _listen() {
     switch (_controller.position.userScrollDirection) {
       case ScrollDirection.idle:
@@ -58,9 +68,35 @@ class _ReadingModalState extends State<ReadingModal> {
     }
   }
 
+  void _previousChapter() {
+    _pageBloc.add(MangaGetChapterPagesEvent(id: widget.chapters[widget.indexChapter - 1].id!));
+    setState(() {
+      numChapter = numChapter! - 1;
+    });
+  }
+
+  void _nextChapter() {
+    _pageBloc.add(MangaGetChapterPagesEvent(id: widget.chapters[widget.indexChapter + 1].id!));
+    setState(() {
+      numChapter = numChapter! + 1;
+    });
+  }
+
   @override
   void initState() {
-    numChapter = int.parse(widget.id.substring(widget.id.length - 1, widget.id.length));
+    const fullscreenInset = ViewportInset.fixed(0);
+    _controllerPageView = ExprollablePageController(
+        // viewportConfiguration: const ViewportConfiguration.raw(
+        //   minFraction: 1,
+        //   max
+        //   minInset: fullscreenInset,
+        //   snapInsets: [
+        //     fullscreenInset,
+        //   ],
+        // ),
+        );
+    _pageBloc.add(MangaGetChapterPagesEvent(id: widget.id));
+    numChapter = widget.indexChapter;
     _controller.addListener(_listen);
     super.initState();
   }
@@ -75,20 +111,18 @@ class _ReadingModalState extends State<ReadingModal> {
     if (!_controller1.hasClients) return false;
     final maxScroll = _controller1.position.maxScrollExtent;
     final currentScroll = _controller1.offset;
-    return currentScroll >= (maxScroll * 0.9);
+    return currentScroll >= maxScroll;
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer(
-      listener: (context, state) {
-        log('Thay doi');
-      },
+    final index = widget.indexChapter;
+    log(widget.chapters[index].toString());
+    return BlocBuilder(
       buildWhen: (previous, current) {
-        log('previous: $previous, current:$current');
-        return previous != current;
+        return previous != current && current is MangaGetChapterPagesSuccessfulState;
       },
-      bloc: widget.bloc,
+      bloc: _pageBloc,
       builder: (context, state) {
         switch (state.runtimeType) {
           case MangaFetchingLoadingState:
@@ -99,29 +133,37 @@ class _ReadingModalState extends State<ReadingModal> {
               ),
             );
           case MangaGetChapterPagesSuccessfulState:
-            final pageState = state as MangaGetChapterPagesSuccessfulState;
+            final pageState = state! as MangaGetChapterPagesSuccessfulState;
             return Scaffold(
               bottomNavigationBar: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 curve: Curves.easeInOut,
                 height: _isVisible ? 60 : 0,
                 child: BottomAppBar(
-                  child: Stack(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // SizedBox.expand(
-                      //   child: Row(
-                      //     mainAxisAlignment: MainAxisAlignment.center,
-                      //     children: [
-                      //       Text(
-                      //         '${_currentIndex + 1} / ${pageState.pages.results.length}',
-                      //         style: const TextStyle(fontWeight: FontWeight.w600),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-                      IconButton(
-                        icon: const Icon(Icons.comment),
-                        onPressed: () {},
+                      const Icon(Icons.comment),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: numChapter! > 0 ? _previousChapter : null,
+                            child: Icon(
+                              CupertinoIcons.arrowtriangle_left_fill,
+                              color: numChapter! > 0 ? Colors.white : Colors.grey.shade400,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: Sizes.lg,
+                          ),
+                          GestureDetector(
+                            onTap: numChapter! < widget.totalChapters - 1 ? _nextChapter : null,
+                            child: Icon(
+                              CupertinoIcons.arrowtriangle_right_fill,
+                              color: numChapter! < widget.totalChapters - 1 ? Colors.white : Colors.grey.shade400,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -142,7 +184,7 @@ class _ReadingModalState extends State<ReadingModal> {
                       ),
                       backgroundColor: Colors.grey.shade900.withOpacity(0.9),
                       title: Text(
-                        widget.title,
+                        widget.chapters[numChapter! as int].title!,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       actions: [
@@ -247,45 +289,56 @@ class _ReadingModalState extends State<ReadingModal> {
                     ),
                   ];
                 },
-                body: ListView.builder(
-                  controller: _controller1,
-                  shrinkWrap: true,
-                  scrollDirection: readingDirection == SegmentType.vertical ? Axis.vertical : Axis.horizontal,
-                  padding: EdgeInsets.zero,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onPanDown: (details) {
-                        if (_isBottom) {
-                          context.read<MangaBloc>().add(MangaGetChapterPagesEvent(
-                              id: '${widget.id.substring(0, widget.id.length - 1)}${numChapter! + 1}'));
-                        }
-                      },
-                      // onPanUpdate: (details) {
-                      //   if (details.delta.dy < 0) {
-                      //     log('Swiping up the element $index');
-                      //   }
-                      //   // Catch the swipe down action.
-                      //   if (details.delta.dy > 0) {
-                      //     log('Swiping down the element $index');
-                      //   }
-                      // },
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: CachedNetworkImage(
-                          httpHeaders: const {
-                            'Referer': 'https://manganato.com/',
-                          },
-                          placeholder: (context, url) => LoadingAnimationWidget.halfTriangleDot(
-                            color: Colors.grey,
-                            size: 40,
-                          ),
-                          imageUrl: pageState.pages.results[index],
-                        ),
+                body: readingDirection == SegmentType.vertical
+                    ? ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        controller: _controller1,
+                        shrinkWrap: true,
+                        scrollDirection: readingDirection == SegmentType.vertical ? Axis.vertical : Axis.horizontal,
+                        padding: EdgeInsets.zero,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onPanDown: (details) {
+                              if (_isBottom) {
+                                _nextChapter();
+                              }
+                            },
+                            child: CachedNetworkImage(
+                              httpHeaders: const {
+                                'Referer': 'https://manganato.com/',
+                              },
+                              placeholder: (context, url) => LoadingAnimationWidget.halfTriangleDot(
+                                color: Colors.grey,
+                                size: 40,
+                              ),
+                              imageUrl: pageState.pages.results[index],
+                            ),
+                          );
+                        },
+                        itemCount: pageState.pages.results.length,
+                      )
+                    : ExprollablePageView(
+                        controller: _controllerPageView,
+                        itemCount: 5,
+                        itemBuilder: (context, page) {
+                          return ListView.builder(
+                            controller: PageContentScrollController.of(context),
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return CachedNetworkImage(
+                                httpHeaders: const {
+                                  'Referer': 'https://manganato.com/',
+                                },
+                                placeholder: (context, url) => LoadingAnimationWidget.halfTriangleDot(
+                                  color: Colors.grey,
+                                  size: 40,
+                                ),
+                                imageUrl: pageState.pages.results[index],
+                              );
+                            },
+                          );
+                        },
                       ),
-                    );
-                  },
-                  itemCount: pageState.pages.results.length,
-                ),
               ),
             );
         }

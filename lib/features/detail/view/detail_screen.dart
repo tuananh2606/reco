@@ -198,9 +198,10 @@ class _DetailScreenState extends State<DetailScreen> {
                                       context: context,
                                       backgroundColor: Colors.black,
                                       builder: (context) => ReadingModal(
-                                        bloc: _pageBloc,
                                         id: successState.manga.results.chapters!.sublist(first, last)[index].id!,
-                                        title: successState.manga.results.chapters!.sublist(first, last)[index].title!,
+                                        indexChapter: index + first,
+                                        chapters: successState.manga.results.chapters!,
+                                        totalChapters: successState.manga.results.chapters!.length,
                                       ),
                                     );
                                   },
