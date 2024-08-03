@@ -16,14 +16,42 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   final MangaBloc mangaBloc = MangaBloc();
+  final ScrollController _scrollController = ScrollController();
+  late int page = 2;
+
   @override
   void initState() {
-    mangaBloc.add(MangaInitialFetchEvent());
+    context.read<MangaBloc>().add(const MangaEvent.fetchManga('latest', '1'));
+    _scrollController.addListener(_onScroll);
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
+
   Future<void> _refresh() async {
-    mangaBloc.add(MangaInitialFetchEvent());
+    context.read<MangaBloc>().add(const MangaEvent.fetchManga('latest', '1'));
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      context.read<MangaBloc>().add(MangaEvent.fetchManga('latest', page.toString()));
+      setState(() {
+        page = page + 1;
+      });
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= maxScroll;
   }
 
   @override
@@ -40,38 +68,42 @@ class _HomepageState extends State<Homepage> {
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: BlocBuilder(
-            bloc: mangaBloc,
-            builder: (context, state) {
-              switch (state.runtimeType) {
-                case MangaFetchingLoadingState:
-                  return SizedBox(
-                    height: DeviceUtils.getScreenHeight(context),
-                    child: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                case MangaFetchingSuccessfulState:
-                  final successState = state as MangaFetchingSuccessfulState;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(Sizes.defaultSpace),
-                        child: CarouselSlider(
-                          items: imgList
-                              .map(
-                                (item) => GestureDetector(
-                                  child: Image.network(item,
-                                      width: DeviceUtils.getScreenWidth(context), fit: BoxFit.cover),
-                                ),
-                              )
-                              .toList(),
-                          options: CarouselOptions(viewportFraction: 1, height: 120),
+          controller: _scrollController,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(Sizes.defaultSpace),
+                child: CarouselSlider(
+                  items: imgList
+                      .map(
+                        (item) => GestureDetector(
+                          child: Image.network(
+                            item,
+                            width: DeviceUtils.getScreenWidth(context),
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-                      Padding(
+                      )
+                      .toList(),
+                  options: CarouselOptions(viewportFraction: 1, height: 120),
+                ),
+              ),
+              BlocBuilder<MangaBloc, MangaState>(
+                builder: (context, state) {
+                  switch (state.status) {
+                    case MangaStatus.initial:
+                      return SizedBox(
+                        height: DeviceUtils.getScreenHeight(context),
+                        child: const Center(child: CircularProgressIndicator()),
+                      );
+                    case MangaStatus.loading:
+                      return SizedBox(
+                        height: DeviceUtils.getScreenHeight(context),
+                        child: const Center(child: CircularProgressIndicator()),
+                      );
+                    case MangaStatus.success:
+                      return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: Sizes.defaultSpace / 2),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,24 +116,34 @@ class _HomepageState extends State<Homepage> {
                               height: Sizes.spaceBtwItems,
                             ),
                             GridLayout(
-                              itemCount: successState.manga.results.length,
-                              itemBuilder: (context, index) => CardItem(
-                                img: successState.manga.results[index].img!,
-                                title: successState.manga.results[index].title,
-                                id: successState.manga.results[index].id!,
-                              ),
+                              itemCount:
+                                  state.hasReachedMax ? state.mangas.results.length : state.mangas.results.length + 1,
+                              itemBuilder: (context, index) => index >= state.mangas.results.length
+                                  ? const Center(
+                                      child: SizedBox(
+                                        height: 24,
+                                        width: 24,
+                                        child: CircularProgressIndicator(strokeWidth: 1.5),
+                                      ),
+                                    )
+                                  : CardItem(
+                                      img: state.mangas.results[index].img!,
+                                      title: state.mangas.results[index].title,
+                                      id: state.mangas.results[index].id!,
+                                    ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                      );
+                    case MangaStatus.error:
+                  }
+                  return SizedBox(
+                    height: DeviceUtils.getScreenHeight(context),
+                    child: const Center(child: CircularProgressIndicator()),
                   );
-              }
-              return SizedBox(
-                height: DeviceUtils.getScreenHeight(context),
-                child: const Center(child: CircularProgressIndicator()),
-              );
-            },
+                },
+              ),
+            ],
           ),
         ),
       ),

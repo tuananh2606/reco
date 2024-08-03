@@ -1,23 +1,6 @@
 part of 'manga_bloc.dart';
 
-@immutable
-abstract class MangaEvent {}
-
-class MangaInitialFetchEvent extends MangaEvent {}
-
-class MangaSearchEvent extends MangaEvent {
-  MangaSearchEvent({required this.query});
-  final String query;
+@freezed
+class MangaEvent with _$MangaEvent {
+  const factory MangaEvent.fetchManga(String type, String page) = _FetchManga;
 }
-
-class MangaDetailsEvent extends MangaEvent {
-  MangaDetailsEvent({required this.id});
-  final String id;
-}
-
-class MangaGetChapterPagesEvent extends MangaEvent {
-  MangaGetChapterPagesEvent({required this.id});
-  final String id;
-}
-
-class PullToRefreshEvent extends MangaEvent {}

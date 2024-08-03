@@ -5,9 +5,9 @@ import 'package:reco/utils/constants/api_constants.dart';
 class MangaRepository {
   static final dio = Dio();
 
-  static Future<MangaModel> fetchManga() async {
+  static Future<MangaModel> fetchManga(String type, String page) async {
     try {
-      final response = await dio.get('$API_URL/latest');
+      final response = await dio.get('$API_URL/$type/$page');
       if (response.statusCode == 200) {
         return MangaModel.fromJson(response.data as Map<String, Object?>);
       } else {

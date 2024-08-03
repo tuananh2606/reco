@@ -6,9 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:reco/bloc/manga_bloc/manga_bloc.dart';
-import 'package:reco/common/widgets/card/card_item.dart';
 import 'package:reco/common/widgets/carousel/carousel_slider.dart';
-import 'package:reco/common/widgets/layout/grid_layout.dart';
 import 'package:reco/common/widgets/tabbar/switch_tabbar.dart';
 import 'package:reco/utils/constants/sizes.dart';
 import 'package:reco/utils/device/device_utility.dart';
@@ -62,7 +60,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
       if (query.isEmpty) {
         return;
       }
-      _mangaBloc.add(MangaSearchEvent(query: query));
+      //_mangaBloc.add(MangaSearchEvent(query: query));
     });
   }
 
@@ -285,25 +283,25 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                 child: BlocBuilder(
                   bloc: _mangaBloc,
                   builder: (context, state) {
-                    switch (state.runtimeType) {
-                      case MangaFetchingLoadingState:
-                        return SizedBox(
-                          height: DeviceUtils.getScreenHeight(context),
-                          child: const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      case MangaSearchSuccessfulState:
-                        final successState = state! as MangaSearchSuccessfulState;
-                        return GridLayout(
-                          itemCount: successState.manga.results.length,
-                          itemBuilder: (_, index) => CardItem(
-                            img: successState.manga.results[index].img1!,
-                            title: successState.manga.results[index].title,
-                            id: successState.manga.results[index].id!,
-                          ),
-                        );
-                    }
+                    // switch (state.runtimeType) {
+                    //   case MangaFetchingLoadingState:
+                    //     return SizedBox(
+                    //       height: DeviceUtils.getScreenHeight(context),
+                    //       child: const Center(
+                    //         child: CircularProgressIndicator(),
+                    //       ),
+                    //     );
+                    //   case MangaSearchSuccessfulState:
+                    //     final successState = state! as MangaSearchSuccessfulState;
+                    //     return GridLayout(
+                    //       itemCount: successState.manga.results.length,
+                    //       itemBuilder: (_, index) => CardItem(
+                    //         img: successState.manga.results[index].img1!,
+                    //         title: successState.manga.results[index].title,
+                    //         id: successState.manga.results[index].id!,
+                    //       ),
+                    //     );
+                    // }
                     return SizedBox(
                       height: DeviceUtils.getScreenHeight(context) * 0.3,
                       child: const Center(child: CircularProgressIndicator()),
@@ -316,25 +314,25 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
               child: BlocBuilder(
                 bloc: _mangaBloc,
                 builder: (context, state) {
-                  switch (state.runtimeType) {
-                    case MangaFetchingLoadingState:
-                      return SizedBox(
-                        height: DeviceUtils.getScreenHeight(context),
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    case MangaSearchSuccessfulState:
-                      final successState = state! as MangaSearchSuccessfulState;
-                      return GridLayout(
-                        itemCount: successState.manga.results.length,
-                        itemBuilder: (_, index) => CardItem(
-                          img: successState.manga.results[index].img1!,
-                          title: successState.manga.results[index].title,
-                          id: successState.manga.results[index].id!,
-                        ),
-                      );
-                  }
+                  // switch (state.runtimeType) {
+                  //   case MangaFetchingLoadingState:
+                  //     return SizedBox(
+                  //       height: DeviceUtils.getScreenHeight(context),
+                  //       child: const Center(
+                  //         child: CircularProgressIndicator(),
+                  //       ),
+                  //     );
+                  //   case MangaSearchSuccessfulState:
+                  //     final successState = state! as MangaSearchSuccessfulState;
+                  //     return GridLayout(
+                  //       itemCount: successState.manga.results.length,
+                  //       itemBuilder: (_, index) => CardItem(
+                  //         img: successState.manga.results[index].img1!,
+                  //         title: successState.manga.results[index].title,
+                  //         id: successState.manga.results[index].id!,
+                  //       ),
+                  //     );
+                  // }
                   return SizedBox(
                     height: DeviceUtils.getScreenHeight(context) * 0.3,
                     child: const Center(child: CircularProgressIndicator()),

@@ -1,12 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:reco/bloc/manga_bloc/manga_bloc.dart';
-import 'package:reco/common/widgets/modals/reading_modal.dart';
-import 'package:reco/utils/constants/sizes.dart';
 import 'package:reco/utils/device/device_utility.dart';
 
 enum SegmentType { horizontal, vertical }
@@ -52,7 +48,7 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   void initState() {
     _controller.addListener(_listen);
-    _mangaBloc.add(MangaDetailsEvent(id: widget.id));
+    //_mangaBloc.add(MangaDetailsEvent(id: widget.id));
     super.initState();
   }
 
@@ -85,141 +81,142 @@ class _DetailScreenState extends State<DetailScreen> {
       body: BlocBuilder(
         bloc: _mangaBloc,
         builder: (context, state) {
-          switch (state.runtimeType) {
-            case MangaFetchingLoadingState:
-              return SizedBox(
-                height: DeviceUtils.getScreenHeight(context),
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            case MangaDetailsSuccessfulState:
-              final successState = state! as MangaDetailsSuccessfulState;
-              final tabsLength = (successState.manga.results.chapters!.length / 50).ceil();
-              return DefaultTabController(
-                length: tabsLength,
-                child: NestedScrollView(
-                  headerSliverBuilder: (_, innerBoxIsScrolled) {
-                    return [
-                      SliverToBoxAdapter(
-                        child: ListView(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          children: [
-                            CachedNetworkImage(
-                              imageUrl: successState.manga.results.img1!,
-                              height: 160,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
-                            ListTile(
-                              title: Text(
-                                successState.manga.results.title,
-                                style: const TextStyle(fontWeight: FontWeight.w600),
-                              ),
-                              subtitle: Text(
-                                successState.manga.results.author,
-                                style: Theme.of(context).textTheme.labelMedium,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SliverAppBar(
-                        automaticallyImplyLeading: false,
-                        pinned: true,
-                        floating: true,
-                        toolbarHeight: 0,
-                        backgroundColor: Colors.black,
-                        forceElevated: innerBoxIsScrolled,
-                        bottom: PreferredSize(
-                          preferredSize: const Size.fromHeight(78),
-                          child: Column(
-                            children: [
-                              Container(
-                                color: Colors.grey.shade900,
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(horizontal: Sizes.md, vertical: Sizes.sm),
-                                child: Text(
-                                  'Chapters',
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                              ),
-                              TabBar(
-                                isScrollable: true,
-                                indicatorColor: Theme.of(context).primaryColor,
-                                indicatorSize: TabBarIndicatorSize.tab,
-                                tabAlignment: TabAlignment.start,
-                                tabs: [
-                                  ...List.generate(tabsLength, (index) {
-                                    final first = index * 50 + 1;
-                                    final last = (index + 1) * 50;
-                                    return Tab(
-                                      height: 40,
-                                      child: Text(
-                                        '$first - $last',
-                                        style: Theme.of(context).textTheme.titleSmall,
-                                      ),
-                                    );
-                                  }),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ];
-                  },
-                  body: TabBarView(
-                    children: [
-                      ...List.generate(tabsLength, (index) {
-                        final first = index * 50;
-                        final last = (index + 1) * 50 > successState.manga.results.chapters!.length
-                            ? successState.manga.results.chapters!.length
-                            : (index + 1) * 50;
-                        final itemCount = last - first;
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: Sizes.xs),
-                          child: ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: itemCount,
-                            itemBuilder: (context, index) {
-                              return SizedBox(
-                                width: double.infinity,
-                                child: TextButton(
-                                  style: TextButton.styleFrom(alignment: Alignment.centerLeft),
-                                  onPressed: () {
-                                    _pageBloc.add(
-                                      MangaGetChapterPagesEvent(
-                                          id: successState.manga.results.chapters!.sublist(first, last)[index].id!),
-                                    );
-                                    showMaterialModalBottomSheet(
-                                      expand: true,
-                                      context: context,
-                                      backgroundColor: Colors.black,
-                                      builder: (context) => ReadingModal(
-                                        id: successState.manga.results.chapters!.sublist(first, last)[index].id!,
-                                        indexChapter: index + first,
-                                        chapters: successState.manga.results.chapters!,
-                                        totalChapters: successState.manga.results.chapters!.length,
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    successState.manga.results.chapters!.sublist(first, last)[index].title!,
-                                    style: Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
-                ),
-              );
-          }
+          // switch (state.runtimeType) {
+          //   case MangaFetchingLoadingState:
+          //     return SizedBox(
+          //       height: DeviceUtils.getScreenHeight(context),
+          //       child: const Center(
+          //         child: CircularProgressIndicator(),
+          //       ),
+          //     );
+          //   case MangaDetailsSuccessfulState:
+          //     final successState = state! as MangaDetailsSuccessfulState;
+          //     final tabsLength = (successState.manga.results.chapters!.length / 50).ceil();
+          //     return DefaultTabController(
+          //       length: tabsLength,
+          //       child: NestedScrollView(
+          //         headerSliverBuilder: (_, innerBoxIsScrolled) {
+          //           return [
+          //             SliverToBoxAdapter(
+          //               child: ListView(
+          //                 shrinkWrap: true,
+          //                 physics: const NeverScrollableScrollPhysics(),
+          //                 children: [
+          //                   CachedNetworkImage(
+          //                     imageUrl: successState.manga.results.img1!,
+          //                     height: 160,
+          //                     width: double.infinity,
+          //                     fit: BoxFit.cover,
+          //                   ),
+          //                   ListTile(
+          //                     title: Text(
+          //                       successState.manga.results.title,
+          //                       style: const TextStyle(fontWeight: FontWeight.w600),
+          //                     ),
+          //                     subtitle: Text(
+          //                       successState.manga.results.author,
+          //                       style: Theme.of(context).textTheme.labelMedium,
+          //                     ),
+          //                   ),
+          //                 ],
+          //               ),
+          //             ),
+          //             SliverAppBar(
+          //               automaticallyImplyLeading: false,
+          //               pinned: true,
+          //               floating: true,
+          //               toolbarHeight: 0,
+          //               backgroundColor: Colors.black,
+          //               forceElevated: innerBoxIsScrolled,
+          //               bottom: PreferredSize(
+          //                 preferredSize: const Size.fromHeight(78),
+          //                 child: Column(
+          //                   children: [
+          //                     Container(
+          //                       color: Colors.grey.shade900,
+          //                       width: double.infinity,
+          //                       padding: const EdgeInsets.symmetric(horizontal: Sizes.md, vertical: Sizes.sm),
+          //                       child: Text(
+          //                         'Chapters',
+          //                         style: Theme.of(context).textTheme.titleSmall,
+          //                       ),
+          //                     ),
+          //                     TabBar(
+          //                       isScrollable: true,
+          //                       indicatorColor: Theme.of(context).primaryColor,
+          //                       indicatorSize: TabBarIndicatorSize.tab,
+          //                       tabAlignment: TabAlignment.start,
+          //                       tabs: [
+          //                         ...List.generate(tabsLength, (index) {
+          //                           final first = index * 50 + 1;
+          //                           final last = (index + 1) * 50;
+          //                           return Tab(
+          //                             height: 40,
+          //                             child: Text(
+          //                               '$first - $last',
+          //                               style: Theme.of(context).textTheme.titleSmall,
+          //                             ),
+          //                           );
+          //                         }),
+          //                       ],
+          //                     ),
+          //                   ],
+          //                 ),
+          //               ),
+          //             ),
+          //           ];
+          //         },
+          //         body: TabBarView(
+          //           children: [
+          //             ...List.generate(tabsLength, (index) {
+          //               final first = index * 50;
+          //               final last = (index + 1) * 50 > successState.manga.results.chapters!.length
+          //                   ? successState.manga.results.chapters!.length
+          //                   : (index + 1) * 50;
+          //               final itemCount = last - first;
+          //               return Padding(
+          //                 padding: const EdgeInsets.symmetric(horizontal: Sizes.xs),
+          //                 child: ListView.builder(
+          //                   physics: const NeverScrollableScrollPhysics(),
+          //                   itemCount: itemCount,
+          //                   itemBuilder: (context, index) {
+          //                     return SizedBox(
+          //                       width: double.infinity,
+          //                       child: TextButton(
+          //                         style: TextButton.styleFrom(alignment: Alignment.centerLeft),
+          //                         onPressed: () {
+          //                           // _pageBloc.add(
+          //                           //   MangaGetChapterPagesEvent(
+          //                           //       id: successState.manga.results.chapters!.sublist(first, last)[index].id!),
+          //                           // );
+          //                           showMaterialModalBottomSheet(
+          //                             expand: true,
+          //                             context: context,
+          //                             backgroundColor: Colors.black,
+          //                             builder: (context) => ReadingModal(
+          //                               id: successState.manga.results.chapters!.sublist(first, last)[index].id!,
+          //                               indexChapter: index + first,
+          //                               chapters: successState.manga.results.chapters!,
+          //                               totalChapters: successState.manga.results.chapters!.length,
+          //                             ),
+          //                           );
+          //                         },
+          //                         child: Text(
+          //                           successState.manga.results.chapters!.sublist(first, last)[index].title!,
+          //                           style: Theme.of(context).textTheme.bodyMedium,
+          //                         ),
+          //                       ),
+          //                     );
+          //                   },
+          //                 ),
+          //               );
+          //             }),
+          //           ],
+          //         ),
+          //       ),
+          //     );
+          // }
+
           return SizedBox(
             height: DeviceUtils.getScreenHeight(context) * 0.3,
             child: const Center(child: CircularProgressIndicator()),

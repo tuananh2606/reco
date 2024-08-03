@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:reco/common/widgets/card/horizontal_card_item.dart';
+import 'package:reco/bloc/manga_bloc/manga_bloc.dart';
 import 'package:reco/common/widgets/chip/chip.dart';
 import 'package:reco/common/widgets/tabbar/tabbar.dart';
 import 'package:reco/utils/constants/sizes.dart';
@@ -15,14 +16,18 @@ class HotScreen extends StatefulWidget {
 class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMixin {
   static const List<Widget> tabs = <Tab>[
     Tab(text: 'Hottest'),
-    Tab(text: 'Trending'),
+    Tab(text: 'Newest'),
     Tab(text: 'Completed'),
   ];
+  final MangaBloc _mangaBloc = MangaBloc();
+  final MangaBloc _mangaNewestBloc = MangaBloc();
 
   late TabController _tabController;
   late ScrollController _scrollViewController;
   @override
   void initState() {
+    //_mangaBloc.add(MangaInitialFetchEvent(type: 'hottest'));
+    //_mangaNewestBloc.add(MangaInitialFetchEvent(type: 'newest'));
     _tabController = TabController(vsync: this, length: tabs.length);
     _scrollViewController = ScrollController();
     super.initState();
@@ -34,6 +39,11 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
     _scrollViewController.dispose();
     super.dispose();
   }
+
+  // Future<void> _refresh() async {
+  //   _mangaBloc.add(MangaInitialFetchEvent(type: 'hottest'));
+  //   _mangaNewestBloc.add(MangaInitialFetchEvent(type: 'newest'));
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -205,49 +215,89 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
           child: TabBarView(
             physics: const NeverScrollableScrollPhysics(),
             children: [
-              ListView(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: const [
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                ],
+              BlocBuilder(
+                bloc: _mangaBloc,
+                builder: (context, state) {
+                  // switch (state.runtimeType) {
+                  //   case MangaFetchingLoadingState:
+                  //     return SizedBox(
+                  //       height: DeviceUtils.getScreenHeight(context),
+                  //       child: const Center(
+                  //         child: CircularProgressIndicator(),
+                  //       ),
+                  //     );
+                  //   case MangaFetchingSuccessfulState:
+                  //     final successState = state! as MangaFetchingSuccessfulState;
+                  //     return ListView.builder(
+                  //       shrinkWrap: true,
+                  //       physics: const NeverScrollableScrollPhysics(),
+                  //       itemCount: successState.manga.results.length,
+                  //       itemBuilder: (context, index) {
+                  //         return HorizontalCardItem(
+                  //           index: index + 1,
+                  //           manga: successState.manga.results[index],
+                  //           // img: successState.manga.results[index].img!,
+                  //           // title: successState.manga.results[index].title,
+                  //           // id: successState.manga.results[index].id!,
+                  //         );
+                  //       },
+                  //     );
+                  // }
+
+                  return SizedBox(
+                    height: DeviceUtils.getScreenHeight(context),
+                    child: const Center(child: CircularProgressIndicator()),
+                  );
+                },
+              ),
+              BlocBuilder(
+                bloc: _mangaNewestBloc,
+                builder: (context, state) {
+                  // switch (state.runtimeType) {
+                  //   case MangaFetchingLoadingState:
+                  //     return SizedBox(
+                  //       height: DeviceUtils.getScreenHeight(context),
+                  //       child: const Center(
+                  //         child: CircularProgressIndicator(),
+                  //       ),
+                  //     );
+                  //   case MangaFetchingSuccessfulState:
+                  //     final successState = state! as MangaFetchingSuccessfulState;
+                  //     return ListView.builder(
+                  //       shrinkWrap: true,
+                  //       physics: const NeverScrollableScrollPhysics(),
+                  //       itemCount: successState.manga.results.length,
+                  //       itemBuilder: (context, index) {
+                  //         return HorizontalCardItem(
+                  //           index: index + 1,
+                  //           manga: successState.manga.results[index],
+                  //           // img: successState.manga.results[index].img!,
+                  //           // title: successState.manga.results[index].title,
+                  //           // id: successState.manga.results[index].id!,
+                  //         );
+                  //       },
+                  //     );
+                  // }
+
+                  return SizedBox(
+                    height: DeviceUtils.getScreenHeight(context),
+                    child: const Center(child: CircularProgressIndicator()),
+                  );
+                },
               ),
               ListView(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 children: const [
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                ],
-              ),
-              ListView(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: const [
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
-                  HorizontalCardItem(),
+                  // HorizontalCardItem(),
+                  // HorizontalCardItem(),
+                  // HorizontalCardItem(),
+                  // HorizontalCardItem(),
+                  // HorizontalCardItem(),
+                  // HorizontalCardItem(),
+                  // HorizontalCardItem(),
+                  // HorizontalCardItem(),
+                  // HorizontalCardItem(),
                 ],
               ),
             ],

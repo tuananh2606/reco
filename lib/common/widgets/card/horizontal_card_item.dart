@@ -1,11 +1,18 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:reco/bloc/manga_bloc/data/models/manga_model.dart';
 import 'package:reco/common/widgets/chip/chip.dart';
 import 'package:reco/utils/constants/sizes.dart';
 
 class HorizontalCardItem extends StatelessWidget {
   const HorizontalCardItem({
+    required this.index,
+    required this.manga,
     super.key,
   });
+
+  final int index;
+  final Manga manga;
 
   @override
   Widget build(BuildContext context) {
@@ -15,31 +22,36 @@ class HorizontalCardItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            height: 80,
-            width: 50,
-            child: Image.network(
-              'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
-              fit: BoxFit.cover,
+            height: 90,
+            width: 60,
+            child: CachedNetworkImage(
+              imageUrl: manga.img!,
+              placeholder: (context, url) => Container(
+                color: Colors.black,
+              ),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
           ),
           const SizedBox(
             width: Sizes.spaceBtwItems,
           ),
           Text(
-            '1',
+            '$index',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           Expanded(
             child: ListTile(
               title: Text(
-                'Test',
+                manga.title,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'aaaaaaaaaaaaaa',
+                    manga.description!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.grey.shade400),
                   ),
                   const SizedBox(

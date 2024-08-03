@@ -1,46 +1,24 @@
 part of 'manga_bloc.dart';
 
-enum MangaStatus { initial, success, failure }
+enum MangaStatus {
+  initial,
+  loading,
+  success,
+  error;
 
-@immutable
-abstract class MangaState {}
-
-abstract class MangaActionState extends MangaState {}
-
-class MangaInitial extends MangaState {}
-
-class MangaFetchingLoadingState extends MangaState {}
-
-class MangaFetchingErrorState extends MangaState {}
-
-//Manga Fetch Event
-class MangaFetchingSuccessfulState extends MangaState {
-  MangaFetchingSuccessfulState({
-    required this.manga,
-  });
-  final MangaModel manga;
+  bool get isInitial => this == MangaStatus.initial;
+  bool get isLoading => this == MangaStatus.loading;
+  bool get isSuccess => this == MangaStatus.success;
+  bool get isError => this == MangaStatus.error;
 }
 
-//Manga Search Event
-class MangaSearchSuccessfulState extends MangaState {
-  MangaSearchSuccessfulState({
-    required this.manga,
-  });
-  final MangaModel manga;
-}
+@freezed
+class MangaState with _$MangaState {
+  const factory MangaState({
+    @Default(MangaStatus.initial) MangaStatus status,
+    @Default(MangaModel(status: 0, results: [])) MangaModel mangas,
+    @Default(false) bool hasReachedMax,
+  }) = _MangaState;
 
-//Manga Details Event
-class MangaDetailsSuccessfulState extends MangaState {
-  MangaDetailsSuccessfulState({
-    required this.manga,
-  });
-  final MangaDetails manga;
-}
-
-//Manga Get Chapter Pages Event
-class MangaGetChapterPagesSuccessfulState extends MangaState {
-  MangaGetChapterPagesSuccessfulState({
-    required this.pages,
-  });
-  final PageModel pages;
+  factory MangaState.fromJson(Map<String, dynamic> json) => _$MangaStateFromJson(json);
 }
