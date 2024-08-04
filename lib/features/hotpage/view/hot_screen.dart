@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:reco/bloc/manga_bloc/manga_bloc.dart';
+import 'package:reco/common/widgets/card/horizontal_card_item.dart';
 import 'package:reco/common/widgets/chip/chip.dart';
 import 'package:reco/common/widgets/tabbar/tabbar.dart';
 import 'package:reco/utils/constants/sizes.dart';
@@ -13,7 +14,8 @@ class HotScreen extends StatefulWidget {
   State<HotScreen> createState() => _HotScreenState();
 }
 
-class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMixin {
+class _HotScreenState extends State<HotScreen>
+    with SingleTickerProviderStateMixin {
   static const List<Widget> tabs = <Tab>[
     Tab(text: 'Hottest'),
     Tab(text: 'Newest'),
@@ -26,8 +28,8 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
   late ScrollController _scrollViewController;
   @override
   void initState() {
-    //_mangaBloc.add(MangaInitialFetchEvent(type: 'hottest'));
-    //_mangaNewestBloc.add(MangaInitialFetchEvent(type: 'newest'));
+    context.read<MangaBloc>().add(const MangaEvent.fetchManga('hottest', '1'));
+    //context.read<MangaBloc>().add(const MangaEvent.fetchManga('newest', '1'));
     _tabController = TabController(vsync: this, length: tabs.length);
     _scrollViewController = ScrollController();
     super.initState();
@@ -40,10 +42,10 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
     super.dispose();
   }
 
-  // Future<void> _refresh() async {
-  //   _mangaBloc.add(MangaInitialFetchEvent(type: 'hottest'));
-  //   _mangaNewestBloc.add(MangaInitialFetchEvent(type: 'newest'));
-  // }
+  Future<void> _refresh() async {
+    context.read<MangaBloc>().add(const MangaEvent.fetchManga('hottest', '1'));
+    context.read<MangaBloc>().add(const MangaEvent.fetchManga('newest', '1'));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +99,8 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
                             isScrollControlled: true,
                             context: context,
                             builder: (context) => SizedBox(
-                              height: DeviceUtils.getScreenHeight(context) * 0.8,
+                              height:
+                                  DeviceUtils.getScreenHeight(context) * 0.8,
                               child: Column(
                                 children: [
                                   Container(
@@ -106,14 +109,17 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
                                     decoration: BoxDecoration(
                                       color: Colors.red.shade700,
                                       borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(Sizes.borderRadiusXl),
-                                        topRight: Radius.circular(Sizes.borderRadiusXl),
+                                        topLeft: Radius.circular(
+                                            Sizes.borderRadiusXl),
+                                        topRight: Radius.circular(
+                                            Sizes.borderRadiusXl),
                                       ),
                                     ),
                                     child: const Text(
                                       'Languages',
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(fontWeight: FontWeight.w600),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                   const SizedBox(
@@ -131,7 +137,8 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
                                   ListView.builder(
                                     shrinkWrap: true,
                                     itemCount: checkboxTitle.length,
-                                    itemBuilder: (BuildContext context, int index) {
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
                                       return CheckBoxLanguage(
                                         title: checkboxTitle[index],
                                       );
@@ -139,9 +146,11 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
                                   ),
                                   Expanded(
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
                                         children: [
                                           SizedBox(
                                             width: double.infinity,
@@ -149,10 +158,13 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
                                               onPressed: () {},
                                               style: ElevatedButton.styleFrom(
                                                 shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(Sizes.sm), // <-- Radius
+                                                  borderRadius: BorderRadius
+                                                      .circular(Sizes
+                                                          .sm), // <-- Radius
                                                 ),
                                                 foregroundColor: Colors.white,
-                                                backgroundColor: Colors.red.shade700,
+                                                backgroundColor:
+                                                    Colors.red.shade700,
                                               ),
                                               child: const Text('Done'),
                                             ),
@@ -160,10 +172,13 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
                                           SizedBox(
                                             width: double.infinity,
                                             child: TextButton(
-                                              onPressed: () => Navigator.of(context).pop(),
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
                                               style: TextButton.styleFrom(
                                                 shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(Sizes.sm), // <-- Radius
+                                                  borderRadius: BorderRadius
+                                                      .circular(Sizes
+                                                          .sm), // <-- Radius
                                                 ),
                                                 foregroundColor: Colors.white,
                                               ),
@@ -215,35 +230,35 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
           child: TabBarView(
             physics: const NeverScrollableScrollPhysics(),
             children: [
-              BlocBuilder(
-                bloc: _mangaBloc,
+              BlocBuilder<MangaBloc, MangaState>(
                 builder: (context, state) {
-                  // switch (state.runtimeType) {
-                  //   case MangaFetchingLoadingState:
-                  //     return SizedBox(
-                  //       height: DeviceUtils.getScreenHeight(context),
-                  //       child: const Center(
-                  //         child: CircularProgressIndicator(),
-                  //       ),
-                  //     );
-                  //   case MangaFetchingSuccessfulState:
-                  //     final successState = state! as MangaFetchingSuccessfulState;
-                  //     return ListView.builder(
-                  //       shrinkWrap: true,
-                  //       physics: const NeverScrollableScrollPhysics(),
-                  //       itemCount: successState.manga.results.length,
-                  //       itemBuilder: (context, index) {
-                  //         return HorizontalCardItem(
-                  //           index: index + 1,
-                  //           manga: successState.manga.results[index],
-                  //           // img: successState.manga.results[index].img!,
-                  //           // title: successState.manga.results[index].title,
-                  //           // id: successState.manga.results[index].id!,
-                  //         );
-                  //       },
-                  //     );
-                  // }
-
+                  switch (state.status) {
+                    case MangaStatus.initial:
+                      return SizedBox(
+                        height: DeviceUtils.getScreenHeight(context),
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    case MangaStatus.loading:
+                      return SizedBox(
+                        height: DeviceUtils.getScreenHeight(context),
+                        child: const Center(child: CircularProgressIndicator()),
+                      );
+                    case MangaStatus.success:
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: state.mangas.results.length,
+                        itemBuilder: (context, index) {
+                          return HorizontalCardItem(
+                            index: index + 1,
+                            manga: state.mangas.results[index],
+                          );
+                        },
+                      );
+                    case MangaStatus.error:
+                  }
                   return SizedBox(
                     height: DeviceUtils.getScreenHeight(context),
                     child: const Center(child: CircularProgressIndicator()),
@@ -251,7 +266,6 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
                 },
               ),
               BlocBuilder(
-                bloc: _mangaNewestBloc,
                 builder: (context, state) {
                   // switch (state.runtimeType) {
                   //   case MangaFetchingLoadingState:
@@ -266,14 +280,14 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
                   //     return ListView.builder(
                   //       shrinkWrap: true,
                   //       physics: const NeverScrollableScrollPhysics(),
-                  //       itemCount: successState.manga.results.length,
+                  //       itemCount: state.mangas.results.length,
                   //       itemBuilder: (context, index) {
                   //         return HorizontalCardItem(
                   //           index: index + 1,
-                  //           manga: successState.manga.results[index],
-                  //           // img: successState.manga.results[index].img!,
-                  //           // title: successState.manga.results[index].title,
-                  //           // id: successState.manga.results[index].id!,
+                  //           manga: state.mangas.results[index],
+                  //           // img: state.mangas.results[index].img!,
+                  //           // title: state.mangas.results[index].title,
+                  //           // id: state.mangas.results[index].id!,
                   //         );
                   //       },
                   //     );

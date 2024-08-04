@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reco/bloc/manga_bloc/manga_bloc.dart';
@@ -40,7 +41,9 @@ class _HomepageState extends State<Homepage> {
 
   void _onScroll() {
     if (_isBottom) {
-      context.read<MangaBloc>().add(MangaEvent.fetchManga('latest', page.toString()));
+      context
+          .read<MangaBloc>()
+          .add(MangaEvent.fetchManga('latest', page.toString()));
       setState(() {
         page = page + 1;
       });
@@ -104,7 +107,8 @@ class _HomepageState extends State<Homepage> {
                       );
                     case MangaStatus.success:
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: Sizes.defaultSpace / 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: Sizes.defaultSpace / 2),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -116,14 +120,17 @@ class _HomepageState extends State<Homepage> {
                               height: Sizes.spaceBtwItems,
                             ),
                             GridLayout(
-                              itemCount:
-                                  state.hasReachedMax ? state.mangas.results.length : state.mangas.results.length + 1,
-                              itemBuilder: (context, index) => index >= state.mangas.results.length
+                              itemCount: state.hasReachedMax
+                                  ? state.mangas.results.length
+                                  : state.mangas.results.length + 1,
+                              itemBuilder: (context, index) => index >=
+                                      state.mangas.results.length
                                   ? const Center(
                                       child: SizedBox(
                                         height: 24,
                                         width: 24,
-                                        child: CircularProgressIndicator(strokeWidth: 1.5),
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 1.5),
                                       ),
                                     )
                                   : CardItem(
