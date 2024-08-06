@@ -38,7 +38,7 @@ dependencies:
   modal_bottom_sheet: ^3.0.0
   path: ^1.9.0
   shared_preferences: ^2.3.1
-  skeletonizer: ^1.4.1+1
+  skeletonizer: ^1.4.2
   smooth_page_indicator: ^1.2.0
   sqflite: ^2.3.3+1
   sticky_headers: ^0.3.0+2
