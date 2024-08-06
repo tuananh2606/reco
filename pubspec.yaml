@@ -33,10 +33,14 @@ dependencies:
   intl: ^0.19.0
   json_annotation: ^4.9.0
   line_icons: ^2.0.3
+  loader_overlay: ^4.0.1
   loading_animation_widget: ^1.2.1
   modal_bottom_sheet: ^3.0.0
+  path: ^1.9.0
+  shared_preferences: ^2.3.1
   skeletonizer: ^1.4.1+1
   smooth_page_indicator: ^1.2.0
+  sqflite: ^2.3.3+1
   sticky_headers: ^0.3.0+2
   url_launcher: ^6.3.0
 
@@ -53,3 +57,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    - assets/favourite_database.db

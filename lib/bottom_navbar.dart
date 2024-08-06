@@ -7,6 +7,7 @@ import 'package:reco/utils/constants/sizes.dart';
 class BottomNavbar extends StatelessWidget {
   BottomNavbar({required this.navigationShell, super.key});
   final StatefulNavigationShell navigationShell;
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   final List<GButton> body = [
     const GButton(

@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:reco/bloc/manga_bloc/data/models/manga_model.dart';
+import 'package:reco/data/models/manga/manga_model.dart';
 import 'package:reco/utils/constants/api_constants.dart';
 
 class MangaRepository {
@@ -14,7 +14,6 @@ class MangaRepository {
         return throw Exception('Failed to fetch manga');
       }
     } catch (e) {
-      //log(e.toString());
       return throw Exception('Something went wrong');
     }
   }

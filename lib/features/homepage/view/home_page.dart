@@ -1,7 +1,9 @@
+import 'dart:developer';
+
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:reco/bloc/manga_bloc/manga_bloc.dart';
 import 'package:reco/common/widgets/card/card_item.dart';
 import 'package:reco/common/widgets/layout/grid_layout.dart';
@@ -41,9 +43,7 @@ class _HomepageState extends State<Homepage> {
 
   void _onScroll() {
     if (_isBottom) {
-      context
-          .read<MangaBloc>()
-          .add(MangaEvent.fetchManga('latest', page.toString()));
+      context.read<MangaBloc>().add(MangaEvent.fetchManga('latest', page.toString()));
       setState(() {
         page = page + 1;
       });
@@ -54,7 +54,7 @@ class _HomepageState extends State<Homepage> {
     if (!_scrollController.hasClients) return false;
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.offset;
-    return currentScroll >= maxScroll;
+    return currentScroll >= maxScroll * 0.9;
   }
 
   @override
@@ -93,22 +93,20 @@ class _HomepageState extends State<Homepage> {
                 ),
               ),
               BlocBuilder<MangaBloc, MangaState>(
+                buildWhen: (previous, current) {
+                  log((previous != current).toString());
+                  return previous != current;
+                },
                 builder: (context, state) {
                   switch (state.status) {
                     case MangaStatus.initial:
-                      return SizedBox(
-                        height: DeviceUtils.getScreenHeight(context),
-                        child: const Center(child: CircularProgressIndicator()),
-                      );
+                      context.loaderOverlay.show();
                     case MangaStatus.loading:
-                      return SizedBox(
-                        height: DeviceUtils.getScreenHeight(context),
-                        child: const Center(child: CircularProgressIndicator()),
-                      );
+                      context.loaderOverlay.show();
                     case MangaStatus.success:
+                      context.loaderOverlay.hide();
                       return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: Sizes.defaultSpace / 2),
+                        padding: const EdgeInsets.symmetric(horizontal: Sizes.defaultSpace / 2),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -120,34 +118,34 @@ class _HomepageState extends State<Homepage> {
                               height: Sizes.spaceBtwItems,
                             ),
                             GridLayout(
-                              itemCount: state.hasReachedMax
-                                  ? state.mangas.results.length
-                                  : state.mangas.results.length + 1,
-                              itemBuilder: (context, index) => index >=
-                                      state.mangas.results.length
-                                  ? const Center(
-                                      child: SizedBox(
-                                        height: 24,
-                                        width: 24,
-                                        child: CircularProgressIndicator(
-                                            strokeWidth: 1.5),
-                                      ),
-                                    )
-                                  : CardItem(
-                                      img: state.mangas.results[index].img!,
-                                      title: state.mangas.results[index].title,
-                                      id: state.mangas.results[index].id!,
-                                    ),
+                              itemCount: state.mangas.results.length,
+                              itemBuilder: (context, index) => CardItem(
+                                img: state.mangas.results[index].img!,
+                                title: state.mangas.results[index].title,
+                                id: state.mangas.results[index].id!,
+                              ),
                             ),
+                            if (_isBottom)
+                              const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.only(bottom: 8),
+                                  child: SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 1.5,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            else
+                              const SizedBox(),
                           ],
                         ),
                       );
                     case MangaStatus.error:
                   }
-                  return SizedBox(
-                    height: DeviceUtils.getScreenHeight(context),
-                    child: const Center(child: CircularProgressIndicator()),
-                  );
+                  return const SizedBox();
                 },
               ),
             ],

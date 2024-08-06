@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:reco/bottom_navbar.dart';
@@ -8,6 +9,7 @@ import 'package:reco/features/profile/view/profile_screen.dart';
 import 'package:reco/features/search/view/search_screen.dart';
 import 'package:reco/features/settings/view/settings_screen.dart';
 
+final GlobalKey<NavigatorState> _profileNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'profile');
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 class LRouter {
@@ -51,10 +53,13 @@ class LRouter {
             ],
           ),
           StatefulShellBranch(
+            navigatorKey: _profileNavigatorKey,
             routes: <RouteBase>[
               GoRoute(
                 path: '/profile',
-                builder: (BuildContext context, GoRouterState state) => const ProfileScreen(),
+                builder: (BuildContext context, GoRouterState state) => ProfileScreen(
+                  key: UniqueKey(),
+                ),
                 routes: [
                   GoRoute(
                     path: 'settings',

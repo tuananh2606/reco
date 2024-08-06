@@ -14,22 +14,21 @@ class HotScreen extends StatefulWidget {
   State<HotScreen> createState() => _HotScreenState();
 }
 
-class _HotScreenState extends State<HotScreen>
-    with SingleTickerProviderStateMixin {
+class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMixin {
   static const List<Widget> tabs = <Tab>[
     Tab(text: 'Hottest'),
     Tab(text: 'Newest'),
     Tab(text: 'Completed'),
   ];
   final MangaBloc _mangaBloc = MangaBloc();
-  final MangaBloc _mangaNewestBloc = MangaBloc();
+  late MangaBloc _mangaNewestBloc = MangaBloc();
 
   late TabController _tabController;
   late ScrollController _scrollViewController;
   @override
   void initState() {
-    context.read<MangaBloc>().add(const MangaEvent.fetchManga('hottest', '1'));
-    //context.read<MangaBloc>().add(const MangaEvent.fetchManga('newest', '1'));
+    _mangaBloc.add(const MangaEvent.fetchManga('hottest', '1'));
+    _mangaNewestBloc.add(const MangaEvent.fetchManga('newest', '1'));
     _tabController = TabController(vsync: this, length: tabs.length);
     _scrollViewController = ScrollController();
     super.initState();
@@ -99,8 +98,7 @@ class _HotScreenState extends State<HotScreen>
                             isScrollControlled: true,
                             context: context,
                             builder: (context) => SizedBox(
-                              height:
-                                  DeviceUtils.getScreenHeight(context) * 0.8,
+                              height: DeviceUtils.getScreenHeight(context) * 0.8,
                               child: Column(
                                 children: [
                                   Container(
@@ -109,17 +107,14 @@ class _HotScreenState extends State<HotScreen>
                                     decoration: BoxDecoration(
                                       color: Colors.red.shade700,
                                       borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(
-                                            Sizes.borderRadiusXl),
-                                        topRight: Radius.circular(
-                                            Sizes.borderRadiusXl),
+                                        topLeft: Radius.circular(Sizes.borderRadiusXl),
+                                        topRight: Radius.circular(Sizes.borderRadiusXl),
                                       ),
                                     ),
                                     child: const Text(
                                       'Languages',
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600),
+                                      style: TextStyle(fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                   const SizedBox(
@@ -137,8 +132,7 @@ class _HotScreenState extends State<HotScreen>
                                   ListView.builder(
                                     shrinkWrap: true,
                                     itemCount: checkboxTitle.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
+                                    itemBuilder: (BuildContext context, int index) {
                                       return CheckBoxLanguage(
                                         title: checkboxTitle[index],
                                       );
@@ -146,11 +140,9 @@ class _HotScreenState extends State<HotScreen>
                                   ),
                                   Expanded(
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16),
+                                      padding: const EdgeInsets.symmetric(horizontal: 16),
                                       child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
+                                        mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
                                           SizedBox(
                                             width: double.infinity,
@@ -158,13 +150,10 @@ class _HotScreenState extends State<HotScreen>
                                               onPressed: () {},
                                               style: ElevatedButton.styleFrom(
                                                 shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius
-                                                      .circular(Sizes
-                                                          .sm), // <-- Radius
+                                                  borderRadius: BorderRadius.circular(Sizes.sm), // <-- Radius
                                                 ),
                                                 foregroundColor: Colors.white,
-                                                backgroundColor:
-                                                    Colors.red.shade700,
+                                                backgroundColor: Colors.red.shade700,
                                               ),
                                               child: const Text('Done'),
                                             ),
@@ -172,13 +161,10 @@ class _HotScreenState extends State<HotScreen>
                                           SizedBox(
                                             width: double.infinity,
                                             child: TextButton(
-                                              onPressed: () =>
-                                                  Navigator.of(context).pop(),
+                                              onPressed: () => Navigator.of(context).pop(),
                                               style: TextButton.styleFrom(
                                                 shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius
-                                                      .circular(Sizes
-                                                          .sm), // <-- Radius
+                                                  borderRadius: BorderRadius.circular(Sizes.sm), // <-- Radius
                                                 ),
                                                 foregroundColor: Colors.white,
                                               ),
@@ -231,6 +217,7 @@ class _HotScreenState extends State<HotScreen>
             physics: const NeverScrollableScrollPhysics(),
             children: [
               BlocBuilder<MangaBloc, MangaState>(
+                bloc: _mangaBloc,
                 builder: (context, state) {
                   switch (state.status) {
                     case MangaStatus.initial:
@@ -265,34 +252,36 @@ class _HotScreenState extends State<HotScreen>
                   );
                 },
               ),
-              BlocBuilder(
+              BlocBuilder<MangaBloc, MangaState>(
+                bloc: _mangaNewestBloc,
                 builder: (context, state) {
-                  // switch (state.runtimeType) {
-                  //   case MangaFetchingLoadingState:
-                  //     return SizedBox(
-                  //       height: DeviceUtils.getScreenHeight(context),
-                  //       child: const Center(
-                  //         child: CircularProgressIndicator(),
-                  //       ),
-                  //     );
-                  //   case MangaFetchingSuccessfulState:
-                  //     final successState = state! as MangaFetchingSuccessfulState;
-                  //     return ListView.builder(
-                  //       shrinkWrap: true,
-                  //       physics: const NeverScrollableScrollPhysics(),
-                  //       itemCount: state.mangas.results.length,
-                  //       itemBuilder: (context, index) {
-                  //         return HorizontalCardItem(
-                  //           index: index + 1,
-                  //           manga: state.mangas.results[index],
-                  //           // img: state.mangas.results[index].img!,
-                  //           // title: state.mangas.results[index].title,
-                  //           // id: state.mangas.results[index].id!,
-                  //         );
-                  //       },
-                  //     );
-                  // }
-
+                  switch (state.status) {
+                    case MangaStatus.initial:
+                      return SizedBox(
+                        height: DeviceUtils.getScreenHeight(context),
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    case MangaStatus.loading:
+                      return SizedBox(
+                        height: DeviceUtils.getScreenHeight(context),
+                        child: const Center(child: CircularProgressIndicator()),
+                      );
+                    case MangaStatus.success:
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: state.mangas.results.length,
+                        itemBuilder: (context, index) {
+                          return HorizontalCardItem(
+                            index: index + 1,
+                            manga: state.mangas.results[index],
+                          );
+                        },
+                      );
+                    case MangaStatus.error:
+                  }
                   return SizedBox(
                     height: DeviceUtils.getScreenHeight(context),
                     child: const Center(child: CircularProgressIndicator()),

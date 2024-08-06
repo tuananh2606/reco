@@ -5,8 +5,12 @@ import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:reco/bloc/manga_bloc/manga_bloc.dart';
+import 'package:reco/bloc/manga_bloc/search_bloc/manga_search_bloc.dart';
+import 'package:reco/common/widgets/card/card_item.dart';
 import 'package:reco/common/widgets/carousel/carousel_slider.dart';
+import 'package:reco/common/widgets/layout/grid_layout.dart';
 import 'package:reco/common/widgets/tabbar/switch_tabbar.dart';
 import 'package:reco/utils/constants/sizes.dart';
 import 'package:reco/utils/device/device_utility.dart';
@@ -60,7 +64,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
       if (query.isEmpty) {
         return;
       }
-      //_mangaBloc.add(MangaSearchEvent(query: query));
+      context.read<MangaSearchBloc>().add(MangaSearchEvent.searchManga(query));
     });
   }
 
@@ -280,32 +284,26 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
             else
               SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                child: BlocBuilder(
-                  bloc: _mangaBloc,
+                child: BlocBuilder<MangaSearchBloc, MangaSearchState>(
                   builder: (context, state) {
-                    // switch (state.runtimeType) {
-                    //   case MangaFetchingLoadingState:
-                    //     return SizedBox(
-                    //       height: DeviceUtils.getScreenHeight(context),
-                    //       child: const Center(
-                    //         child: CircularProgressIndicator(),
-                    //       ),
-                    //     );
-                    //   case MangaSearchSuccessfulState:
-                    //     final successState = state! as MangaSearchSuccessfulState;
-                    //     return GridLayout(
-                    //       itemCount: successState.manga.results.length,
-                    //       itemBuilder: (_, index) => CardItem(
-                    //         img: successState.manga.results[index].img1!,
-                    //         title: successState.manga.results[index].title,
-                    //         id: successState.manga.results[index].id!,
-                    //       ),
-                    //     );
-                    // }
-                    return SizedBox(
-                      height: DeviceUtils.getScreenHeight(context) * 0.3,
-                      child: const Center(child: CircularProgressIndicator()),
-                    );
+                    switch (state.status) {
+                      case MangaSearchStatus.initial:
+                        context.loaderOverlay.show();
+                      case MangaSearchStatus.loading:
+                        context.loaderOverlay.show();
+                      case MangaSearchStatus.error:
+                      case MangaSearchStatus.success:
+                        context.loaderOverlay.hide();
+                        return GridLayout(
+                          itemCount: state.response.results.length,
+                          itemBuilder: (_, index) => CardItem(
+                            img: state.response.results[index].img1!,
+                            title: state.response.results[index].title,
+                            id: state.response.results[index].id!,
+                          ),
+                        );
+                    }
+                    return const SizedBox();
                   },
                 ),
               ),

@@ -1,6 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:reco/bloc/favourite_bloc/favourite_bloc.dart';
 import 'package:reco/common/widgets/card/card_item.dart';
 import 'package:reco/common/widgets/layout/grid_layout.dart';
 import 'package:reco/common/widgets/tabbar/tabbar.dart';
@@ -17,6 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 
   @override
   void initState() {
+    context.read<FavouriteBloc>().add(const FavouriteEvent.fetchFavouriteItems());
     _tabController = TabController(length: 2, vsync: this);
     super.initState();
   }
@@ -63,8 +69,34 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
           child: TabBarView(
             controller: _tabController,
             children: [
-              //GridLayout(itemCount: 21, mainAxisExtent: 190, itemBuilder: (_, index) => const CardItem()),
-              //GridLayout(itemCount: 21, mainAxisExtent: 190, itemBuilder: (_, index) => const CardItem()),
+              BlocBuilder<FavouriteBloc, FavouriteState>(
+                buildWhen: (previous, current) {
+                  log('previous: $previous');
+                  log('current: $current');
+
+                  return previous != current;
+                },
+                builder: (context, state) {
+                  switch (state.status) {
+                    case FavouriteStatus.initial:
+                      context.loaderOverlay.show();
+                    case FavouriteStatus.loading:
+                      context.loaderOverlay.show();
+                    case FavouriteStatus.success:
+                      context.loaderOverlay.hide();
+                      return GridLayout(
+                          itemCount: state.results.length,
+                          itemBuilder: (_, index) => CardItem(
+                                id: state.results[index].objectId!,
+                                title: state.results[index].title!,
+                                img: state.results[index].image!,
+                              ));
+                    case FavouriteStatus.error:
+                  }
+                  return const SizedBox();
+                },
+              ),
+              GridLayout(itemCount: 21, mainAxisExtent: 190, itemBuilder: (_, index) => const CardItem()),
             ],
           ),
         ),
