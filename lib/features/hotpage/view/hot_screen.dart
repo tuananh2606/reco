@@ -14,7 +14,7 @@ class HotScreen extends StatefulWidget {
   State<HotScreen> createState() => _HotScreenState();
 }
 
-class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMixin {
+class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   static const List<Widget> tabs = <Tab>[
     Tab(text: 'Hottest'),
     Tab(text: 'Newest'),
@@ -40,6 +40,9 @@ class _HotScreenState extends State<HotScreen> with SingleTickerProviderStateMix
     _scrollViewController.dispose();
     super.dispose();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   Future<void> _refresh() async {
     context.read<MangaBloc>().add(const MangaEvent.fetchManga('hottest', '1'));

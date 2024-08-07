@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:reco/data/database/favourite_database.dart';
+import 'package:reco/data/database/reco_database.dart';
 import 'package:reco/data/models/favourite/favourite_model.dart';
 
 part 'favourite_bloc.freezed.dart';
@@ -17,7 +17,7 @@ class FavouriteBloc extends Bloc<FavouriteEvent, FavouriteState> {
   }
 
   FutureOr<void> favouriteFetchEvent(_FetchFavouriteItems event, Emitter<FavouriteState> emit) async {
-    final FavouriteDatabase db = FavouriteDatabase.instance;
+    final RecoDatabase db = RecoDatabase.instance;
     emit(state.copyWith(status: FavouriteStatus.loading));
     try {
       final res = await db.listFavourite();

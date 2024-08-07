@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:reco/data/models/manga/manga_model.dart';
 import 'package:reco/common/widgets/chip/chip.dart';
+import 'package:reco/data/database/reco_database.dart';
+import 'package:reco/data/models/history/history_model.dart';
+import 'package:reco/data/models/manga/manga_model.dart';
 import 'package:reco/utils/constants/sizes.dart';
 
 class HorizontalCardItem extends StatelessWidget {
@@ -17,8 +19,12 @@ class HorizontalCardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final db = RecoDatabase.instance;
     return GestureDetector(
-      onTap: () => context.push('/details/${manga.id}'),
+      onTap: () {
+        db.insertHistoryItem(HistoryModel(objectId: manga.id, title: manga.title, image: manga.img ?? manga.img1));
+        context.push('/details/${manga.id}');
+      },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 8),
         child: Row(

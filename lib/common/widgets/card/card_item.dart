@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:reco/data/database/reco_database.dart';
+import 'package:reco/data/models/history/history_model.dart';
 import 'package:reco/utils/constants/sizes.dart';
 
 class CardItem extends StatelessWidget {
@@ -17,8 +19,12 @@ class CardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final db = RecoDatabase.instance;
     return GestureDetector(
-      onTap: () => context.push('/details/$id'),
+      onTap: () {
+        db.insertHistoryItem(HistoryModel(objectId: id, title: title, image: img));
+        context.push('/details/$id');
+      },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

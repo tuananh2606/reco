@@ -6,7 +6,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:reco/bloc/manga_bloc/detail_bloc/manga_detail_bloc.dart';
 import 'package:reco/common/widgets/modals/reading_modal.dart';
-import 'package:reco/data/database/favourite_database.dart';
+import 'package:reco/data/database/reco_database.dart';
 import 'package:reco/data/models/favourite/favourite_model.dart';
 import 'package:reco/utils/constants/sizes.dart';
 import 'package:reco/utils/device/device_utility.dart';
@@ -22,7 +22,8 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  final FavouriteDatabase db = FavouriteDatabase.instance;
+  final RecoDatabase db = RecoDatabase.instance;
+  bool isFavouriteItem = false;
   late SegmentType readingDirection = SegmentType.vertical;
   final ScrollController _controller = ScrollController();
   bool _isVisible = true;
@@ -53,6 +54,7 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   void initState() {
     _controller.addListener(_listen);
+    _loadData();
     context.read<MangaDetailBloc>().add(MangaDetailEvent.getDetailManga(widget.id));
     super.initState();
   }
@@ -61,6 +63,15 @@ class _DetailScreenState extends State<DetailScreen> {
   void dispose() {
     _controller.removeListener(_listen);
     super.dispose();
+  }
+
+  _loadData() async {
+    final item = await db.getFavouriteItem(widget.id);
+    if (item?.objectId != null) {
+      setState(() {
+        isFavouriteItem = true;
+      });
+    }
   }
 
   @override
@@ -79,11 +90,20 @@ class _DetailScreenState extends State<DetailScreen> {
             return AppBar(
               actions: [
                 IconButton(
-                  icon: const Icon(LineIcons.star),
-                  onPressed: () {
-                    db.insertFavouriteItem(newFavouriteItem);
-                  },
-                ),
+                    icon: isFavouriteItem ? const Icon(LineIcons.starAlt) : const Icon(LineIcons.star),
+                    onPressed: () {
+                      if (isFavouriteItem) {
+                        db.deleteFavouriteItem(id);
+                        setState(() {
+                          isFavouriteItem = false;
+                        });
+                      } else {
+                        db.insertFavouriteItem(newFavouriteItem);
+                        setState(() {
+                          isFavouriteItem = true;
+                        });
+                      }
+                    }),
                 IconButton(
                   icon: const Icon(LineIcons.language),
                   onPressed: () {},

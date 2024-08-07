@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +7,8 @@ import 'package:reco/bloc/favourite_bloc/favourite_bloc.dart';
 import 'package:reco/common/widgets/card/card_item.dart';
 import 'package:reco/common/widgets/layout/grid_layout.dart';
 import 'package:reco/common/widgets/tabbar/tabbar.dart';
+import 'package:reco/data/database/reco_database.dart';
+import 'package:reco/data/models/history/history_model.dart';
 import 'package:reco/utils/constants/sizes.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -19,7 +19,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
+  final RecoDatabase db = RecoDatabase.instance;
   @override
   void initState() {
     context.read<FavouriteBloc>().add(const FavouriteEvent.fetchFavouriteItems());
@@ -71,9 +71,6 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
             children: [
               BlocBuilder<FavouriteBloc, FavouriteState>(
                 buildWhen: (previous, current) {
-                  log('previous: $previous');
-                  log('current: $current');
-
                   return previous != current;
                 },
                 builder: (context, state) {
@@ -85,18 +82,37 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                     case FavouriteStatus.success:
                       context.loaderOverlay.hide();
                       return GridLayout(
-                          itemCount: state.results.length,
-                          itemBuilder: (_, index) => CardItem(
-                                id: state.results[index].objectId!,
-                                title: state.results[index].title!,
-                                img: state.results[index].image!,
-                              ));
+                        itemCount: state.results.length,
+                        itemBuilder: (_, index) => CardItem(
+                          id: state.results[index].objectId!,
+                          title: state.results[index].title!,
+                          img: state.results[index].image!,
+                        ),
+                      );
                     case FavouriteStatus.error:
                   }
                   return const SizedBox();
                 },
               ),
-              GridLayout(itemCount: 21, mainAxisExtent: 190, itemBuilder: (_, index) => const CardItem()),
+              FutureBuilder<List<HistoryModel>>(
+                future: db.listHistory(),
+                builder: (context, AsyncSnapshot<List<HistoryModel>> snapshot) {
+                  if (snapshot.hasData) {
+                    context.loaderOverlay.hide();
+                    return GridLayout(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (_, index) => CardItem(
+                        id: snapshot.data![index].objectId!,
+                        title: snapshot.data![index].title!,
+                        img: snapshot.data![index].image!,
+                      ),
+                    );
+                  } else {
+                    context.loaderOverlay.show();
+                  }
+                  return const SizedBox();
+                },
+              ),
             ],
           ),
         ),

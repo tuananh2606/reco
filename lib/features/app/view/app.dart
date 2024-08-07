@@ -34,8 +34,9 @@ class App extends StatelessWidget {
         ),
       ],
       child: GlobalLoaderOverlay(
-        duration: Durations.medium4,
-        reverseDuration: Durations.medium4,
+        duration: Durations.short3,
+        reverseDuration: Durations.short3,
+        overlayColor: Colors.grey.withOpacity(0.2),
         child: MaterialApp.router(
           darkTheme: AppTheme.darkTheme,
           debugShowCheckedModeBanner: false,

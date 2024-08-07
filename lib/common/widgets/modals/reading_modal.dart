@@ -316,7 +316,6 @@ class _ReadingModalState extends State<ReadingModal> {
                       )
                     : ExprollablePageView(
                         controller: _controllerPageView,
-                        itemCount: 5,
                         itemBuilder: (context, page) {
                           return ListView.builder(
                             itemCount: state.response!.results.length,
