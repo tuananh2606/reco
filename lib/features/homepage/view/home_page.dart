@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,7 +45,6 @@ class _HomepageState extends State<Homepage> {
       setState(() {
         page = page + 1;
       });
-      log(page.toString());
     }
   }
 

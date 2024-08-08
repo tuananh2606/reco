@@ -29,7 +29,7 @@ class RecoDatabase {
   //Favourite
   Future<List<FavouriteModel>> listFavourite() async {
     final db = await database;
-    final results = await db.query(_tableFavouriteName);
+    final results = await db.query(_tableFavouriteName, orderBy: 'id DESC');
     return results.map((json) => FavouriteModel.fromJson(json)).toList();
   }
 
@@ -84,12 +84,9 @@ class RecoDatabase {
 
   Future<HistoryModel> insertHistoryItem(HistoryModel historyItem) async {
     final db = await database;
-    final test = await db.rawQuery('SELECT name from sqlite_master where type = ?', ['trigger']);
-    log(test.toString());
     final objectId = historyItem.objectId!;
     final exists = await getHistoryItem(objectId);
     if (exists?.objectId != null) {
-      log('Vao');
       await deleteHistoryItem(historyItem.objectId!);
     }
     final id = await db.insert(_tableHistoryName, historyItem.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
@@ -113,14 +110,16 @@ class RecoDatabase {
   Future<Database> _initDatabase() async {
     final path = join(await getDatabasesPath(), _databaseName);
     final exists = await databaseExists(path);
-    if (exists) {
-      log('Create new database from assets');
+    final File file = File(path);
+    if (!exists) {
+      log('Creating new copy from asset');
       try {
         await Directory(dirname(path)).create(recursive: true);
       } catch (_) {
-        ByteData data = await rootBundle.load(join("assets/databases", _databaseName));
+        ByteData data = await rootBundle.load(join('assets', _databaseName));
         List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-        await File(path).writeAsBytes(bytes, flush: true);
+        await file.writeAsBytes(bytes, flush: true);
+        log('database successfully copied to $path');
       }
     } else {
       log('Opening existing database');
@@ -146,14 +145,12 @@ class RecoDatabase {
           )
         ''')
           ..execute('''
-          CREATE TRIGGER keep_30_rows 
-            AFTER INSERT 
-            ON $_tableHistoryName
-            WHEN (SELECT COUNT(*) FROM $_tableHistoryName) > 2
-          BEGIN
-              DELETE FROM $_tableHistoryName
-              WHERE id = (SELECT MIN(id) FROM $_tableHistoryName);
-          END;
+          CREATE TRIGGER keep_30_rows AFTER INSERT ON $_tableHistoryName
+            WHEN (SELECT COUNT(*) FROM $_tableHistoryName) > 30
+            BEGIN
+                DELETE FROM $_tableHistoryName
+                WHERE id = (SELECT MIN(id) FROM $_tableHistoryName);
+            END;
         ''');
       },
       version: _databaseVersion,

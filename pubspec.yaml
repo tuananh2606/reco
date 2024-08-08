@@ -58,4 +58,4 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - assets/favourite_database.db
+    - assets/reco_database.db

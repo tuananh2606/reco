@@ -57,9 +57,7 @@ class LRouter {
             routes: <RouteBase>[
               GoRoute(
                 path: '/profile',
-                builder: (BuildContext context, GoRouterState state) => ProfileScreen(
-                  key: UniqueKey(),
-                ),
+                builder: (BuildContext context, GoRouterState state) => const ProfileScreen(),
                 routes: [
                   GoRoute(
                     path: 'settings',

@@ -42,7 +42,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
     const Homepage(),
     const HotScreen(),
     const SearchScreen(),
-    ProfileScreen(key: Key('PageC${DateTime.now().millisecondsSinceEpoch}')),
+    const ProfileScreen(),
   ];
 
   void _onItemTapped(int index, BuildContext context) {
